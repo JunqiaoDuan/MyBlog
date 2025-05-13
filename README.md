@@ -1,27 +1,24 @@
 # MyBlog
 
-A modern, full-stack blog application built with ASP.NET Core and Blazor WebAssembly.
+A modern, full-stack blog application built with ASP.NET Core and Blazor Server.
 
 ## 🚀 Features
 
-- Modern, responsive client-side UI with Blazor WebAssembly
-- RESTful API backend with ASP.NET Core Minimal APIs
+- Modern, responsive server-side UI with Blazor Server
 - SQLite database for data persistence
 - Azure App Service hosting
-- Minimal API architecture for better performance
 
 ## 🛠️ Tech Stack
 
 ### Backend
 
 - ASP.NET Core 8.0
-- Minimal APIs
 - Entity Framework Core
 - SQLite
 
 ### Frontend
 
-- Blazor WebAssembly
+- Blazor Server
 - HTML5/CSS3
 - JavaScript/TypeScript
 
@@ -73,7 +70,7 @@ The application uses the following configuration files:
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/JunqiaoDuan/MyBlog/blob/main/LICENSE) file for details.
 
 ## 👥 Contributing
 
