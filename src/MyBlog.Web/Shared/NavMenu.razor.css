@@ -3,12 +3,19 @@
 }
 
 .top-row {
-    height: 3.5rem;
     background-color: rgba(0,0,0,0.4);
 }
 
+.container-fluid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .navbar-brand {
-    font-size: 1.1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    font-size: 4rem;
 }
 
 .oi {
@@ -18,17 +25,23 @@
     top: -2px;
 }
 
+nav {
+    display: flex;
+    justify-content: center;
+}
+
 .nav-item {
     font-size: 0.9rem;
-    padding-bottom: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
     .nav-item:first-of-type {
-        padding-top: 1rem;
+        padding-left: 1rem;
     }
 
     .nav-item:last-of-type {
-        padding-bottom: 1rem;
+        padding-right: 1rem;
     }
 
     .nav-item ::deep a {
@@ -48,15 +61,4 @@
 .nav-item ::deep a:hover {
     background-color: rgba(255,255,255,0.1);
     color: white;
-}
-
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
-
-    .collapse {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
-    }
 }
