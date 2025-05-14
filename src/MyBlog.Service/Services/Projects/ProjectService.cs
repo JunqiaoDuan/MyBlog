@@ -37,19 +37,31 @@ namespace MyBlog.Service.Services.Projects
         /// <returns></returns>
         public async Task<IList<ProjectQueryView>> GetProjectsAsync()
         {
-            var spec = new ProjectSpec();
-            var projects = await _projectRepository.ListAsync(spec);
-
-            // todo
-            var views = projects.Select(p => new ProjectQueryView()
+            try
             {
-                Name = p.Name,
-                Description = p.Description,
-                UrlGitHub = p.UrlGitHub,
-                UrlDemo = p.UrlDemo
-            }).ToList();
+                var spec = new ProjectSpec();
+                var projects = await _projectRepository.ListAsync(spec);
 
-            return views;
+                // todo
+                var views = projects.Select(p => new ProjectQueryView()
+                {
+                    Name = p.Name,
+                    Description = p.Description,
+                    ImageUrl = p.ImageUrl,
+                    UrlGitHub = p.UrlGitHub,
+                    UrlDemo = p.UrlDemo,
+                    SortNo = p.SortNo,
+                }).ToList();
+
+                return views;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+            throw new Exception();
         }
 
         #endregion

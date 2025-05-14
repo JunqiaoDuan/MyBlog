@@ -10,7 +10,9 @@ namespace MyBlog.Service.Shared.Dtos.Queries
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string ImageUrl { get; set; }
         public string UrlGitHub { get; set; }
         public string UrlDemo { get; set; }
+        public int SortNo { get; set; }
     }
 }

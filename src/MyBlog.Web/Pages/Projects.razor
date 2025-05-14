@@ -1,9 +1,49 @@
 ﻿@page "/projects"
+@using MyBlog.Service.Shared.Dtos.Queries
+@using MyBlog.Service.Shared.Interfaces.Projects
+
+@inject IProjectService _projectService
 
 <PageTitle>Projects</PageTitle>
 
 <h1>projects</h1>
 
-@code {
+<div class="row">
+    @if (projects != null)
+    {
+        foreach (var project in projects)
+        {
+            <div class="col-md-4">
+                <h2>@project.Name</h2>
+                <p>@project.Description</p>
+                @if (!string.IsNullOrEmpty(project.ImageUrl))
+                {
+                    <img src="@project.ImageUrl" alt="@project.Name" class="img-fluid mb-2" />
+                }
+                <div>
+                    @if (!string.IsNullOrEmpty(project.UrlGitHub))
+                    {
+                        <a href="@project.UrlGitHub" target="_blank" class="btn btn-outline-dark me-2">GitHub</a>
+                    }
+                    @if (!string.IsNullOrEmpty(project.UrlDemo))
+                    {
+                        <a href="@project.UrlDemo" target="_blank" class="btn btn-outline-primary">Live Demo</a>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Loading projects...</p>
+    }
+</div>
 
+@code {
+    private IEnumerable<ProjectQueryView>? projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await _projectService.GetProjectsAsync();
+    }
 }
