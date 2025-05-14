@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MyBlog.Web.Configurations;
 using MyBlog.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+#region Custom Register
+
+builder.Services.AddRepositories(builder);
+builder.Services.AddBusinessService();
+
+#endregion
 
 var app = builder.Build();
 
