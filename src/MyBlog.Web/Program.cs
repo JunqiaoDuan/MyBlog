@@ -14,6 +14,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddRepositories(builder);
 builder.Services.AddBusinessService();
+builder.Services.AddAzureServices(builder);
 
 #endregion
 

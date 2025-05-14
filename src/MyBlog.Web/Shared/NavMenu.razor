@@ -1,23 +1,21 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <h2 class="navbar-brand" href="">Drin</h2>
-    </div>
-</div>
+﻿@using Azure.Storage.Queues
+
+@inject QueueServiceClient _queueService
 
 <div>
     <nav class="d-flex">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick='() => OnMenuClick("about")'>
                 <span class="oi oi-home" aria-hidden="true"></span> About
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="projects">
+            <NavLink class="nav-link" href="projects" @onclick='() => OnMenuClick("projects")'>
                 <span class="oi oi-plus" aria-hidden="true"></span> Projects
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="blog">
+            <NavLink class="nav-link" href="blog" @onclick='() => OnMenuClick("blog")'>
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Blog
             </NavLink>
         </div>
@@ -25,5 +23,10 @@
 </div>
 
 @code {
-
+    private async void OnMenuClick(string menuCode)
+    {
+        var queueClient = _queueService.GetQueueClient("click-menu");
+        await queueClient.CreateIfNotExistsAsync();
+        await queueClient.SendMessageAsync($"Clicked {menuCode}");
+    }
 }

@@ -10,11 +10,17 @@
     <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageReference Include="Ardalis.Specification" Version="6.1.0" />
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="6.1.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.22.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MyBlog.Service.Shared\MyBlog.Service.Shared.csproj" />
     <ProjectReference Include="..\MyBlog.Service\MyBlog.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Queue\Azure\" />
   </ItemGroup>
 
 </Project>
