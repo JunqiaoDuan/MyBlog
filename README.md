@@ -1,4 +1,3 @@
-# MyBlog
 
 A modern, full-stack blog application built with ASP.NET Core and Blazor Server.
 
