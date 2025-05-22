@@ -8,7 +8,7 @@ namespace MyBlog.Web.Configurations
         public static IServiceCollection AddBusinessService(
             this IServiceCollection services)
         {
-
+            // todo: inject services automatically
             services.AddScoped<IProjectService, ProjectService>();
 
             return services;
