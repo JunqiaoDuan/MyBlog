@@ -4,36 +4,31 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MyBlog.Infrastructure.Db.EF;
 using MyBlog.Service.Shared.Repository;
+using MyBlog.Web.Data;
 
 namespace MyBlog.Web.Configurations
 {
     public static class ConfigureRepository
     {
-        public static IServiceCollection AddRepositories(
-            this IServiceCollection services,
-            WebApplicationBuilder builder)
+        public static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder, MyBlogSetting setting)
         {
-            // todo
-            var keyVaultUrl = "https://keyvaultmyblogdev001.vault.azure.net/";
-            var sqlConnName = "ConnectionStrings-MyBlog-SqlDb";
+            var secretClient = new SecretClient(new Uri(setting.Azure_KeyVault.Url), new DefaultAzureCredential());
 
-            var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
-
-            var sqlConnection = secretClient.GetSecretAsync(sqlConnName).Result.Value.Value;
+            var sqlConnection = secretClient.GetSecretAsync(setting.Azure_KeyVault.Name_SqlServerConn).Result.Value.Value;
 
             #region Service Repository
 
-            services.AddDbContext<DbContext, MyBlogContext>((serviceProvider, options) =>
+            builder.Services.AddDbContext<DbContext, MyBlogContext>((serviceProvider, options) =>
             {
                 options.UseSqlServer(sqlConnection);
             });
 
-            services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
-            services.AddScoped(typeof(IReadRepository<>), typeof(EFRepository<>));
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
+            builder.Services.AddScoped(typeof(IReadRepository<>), typeof(EFRepository<>));
 
             #endregion
 
-            return services;
+            return builder;
         }
     }
 }

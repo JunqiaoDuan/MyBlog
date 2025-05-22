@@ -5,13 +5,12 @@ namespace MyBlog.Web.Configurations
 {
     public static class ConfigureBusinessService
     {
-        public static IServiceCollection AddBusinessService(
-            this IServiceCollection services)
+        public static WebApplicationBuilder AddBusinessService(this WebApplicationBuilder builder)
         {
             // todo: inject services automatically
-            services.AddScoped<IProjectService, ProjectService>();
+            builder.Services.AddScoped<IProjectService, ProjectService>();
 
-            return services;
+            return builder;
         }
     }
 }

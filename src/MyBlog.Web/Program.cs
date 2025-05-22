@@ -8,13 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 #region Custom Register
 
-builder.Services.AddRepositories(builder);
-builder.Services.AddBusinessService();
-builder.Services.AddAzureServices(builder);
+builder.AddMyBlogSetting(out MyBlogSetting myBlogSetting);
+
+builder.AddRepositories(myBlogSetting);
+builder.AddBusinessService();
+builder.AddAzureServices(myBlogSetting);
 
 #endregion
 

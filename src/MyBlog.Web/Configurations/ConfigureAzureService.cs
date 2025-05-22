@@ -8,29 +8,23 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 using MyBlog.Infrastructure.Db.EF;
 using MyBlog.Service.Shared.Repository;
+using MyBlog.Web.Data;
 using System.Threading.Tasks;
 
 namespace MyBlog.Web.Configurations
 {
     public static class ConfigureAzureService
     {
-        public static IServiceCollection AddAzureServices(
-            this IServiceCollection services,
-            WebApplicationBuilder builder)
+        public static WebApplicationBuilder AddAzureServices(this WebApplicationBuilder builder, MyBlogSetting myBlogSetting)
         {
-            // todo
-            var keyVaultUrl = "https://keyvaultmyblogdev001.vault.azure.net/";
-            var storageConnName = "ConnectionStrings-MyBlog-Storage";
-            var queueConnName = "ConnectionStrings-MyBlog-Queue";
+            var secretClient = new SecretClient(new Uri(myBlogSetting.Azure_KeyVault.Url), new DefaultAzureCredential());
 
-            var secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+            var blogConnection = secretClient.GetSecretAsync(myBlogSetting.Azure_KeyVault.Name_BlogConn).Result.Value.Value;
+            var queueConnection = secretClient.GetSecretAsync(myBlogSetting.Azure_KeyVault.Name_QueueConn).Result.Value.Value;
 
-            var storageConnection = secretClient.GetSecretAsync(storageConnName).Result.Value.Value;
-            var queueConnection = secretClient.GetSecretAsync(queueConnName).Result.Value.Value;
-
-            services.AddAzureClients(azureBuilder =>
+            builder.Services.AddAzureClients(azureBuilder =>
             {
-                azureBuilder.AddBlobServiceClient(storageConnection);
+                azureBuilder.AddBlobServiceClient(blogConnection);
 
                 azureBuilder.AddQueueServiceClient(queueConnection)
                     .ConfigureOptions(options =>
@@ -39,7 +33,7 @@ namespace MyBlog.Web.Configurations
                     });
             });
 
-            return services;
+            return builder;
         }
     }
 }
