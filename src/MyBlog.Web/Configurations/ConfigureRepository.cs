@@ -5,12 +5,32 @@ using Microsoft.Extensions.Options;
 using MyBlog.Infrastructure.Db.EF;
 using MyBlog.Service.Shared.Repository;
 using MyBlog.Web.Data;
+using System;
 
 namespace MyBlog.Web.Configurations
 {
     public static class ConfigureRepository
     {
         public static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder, MyBlogSetting setting)
+        {
+            if (IsSqlite(setting))
+            {
+                InjectRepository_Sqlite(builder);
+            }
+
+            InjectRepository_Default(builder, setting);
+
+            return builder;
+        }
+
+        #region Service provider
+
+        public static bool IsSqlite(MyBlogSetting setting)
+        {
+            return setting.DataBase.DatabaseSource == "sqlite";
+        }
+
+        public static void InjectRepository_Default(WebApplicationBuilder builder, MyBlogSetting setting)
         {
             var secretClient = new SecretClient(new Uri(setting.Azure_KeyVault.Url), new DefaultAzureCredential());
 
@@ -27,8 +47,14 @@ namespace MyBlog.Web.Configurations
             builder.Services.AddScoped(typeof(IReadRepository<>), typeof(EFRepository<>));
 
             #endregion
-
-            return builder;
         }
+
+        public static void InjectRepository_Sqlite(WebApplicationBuilder builder)
+        {
+
+        }
+
+        #endregion
+
     }
 }
