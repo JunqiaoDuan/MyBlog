@@ -58,7 +58,12 @@ dotnet restore
 4. Initialize database
 
 ```
-dotnet ef database update  --project .\MyBlog.Infrastructure  --startup-project .\MyBlog.Web
+-- add migrations (don't need run)
+dotnet ef migrations add InitialCreate  --project .\MyBlog.Infrastructure  --startup-project .\MyBlog.Web
+dotnet ef migrations add SeedInitialData --project .\MyBlog.Infrastructure  --startup-project .\MyBlog.Web
+
+-- need run
+dotnet ef database update --project .\MyBlog.Infrastructure  --startup-project .\MyBlog.Web
 ```
 
 5. Run the application

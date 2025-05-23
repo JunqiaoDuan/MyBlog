@@ -31,7 +31,36 @@ namespace MyBlog.Infrastructure.Db.EF
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            initialiazeSeeds(builder);
         }
+
+        private void initialiazeSeeds(ModelBuilder builder)
+        {
+            builder.Entity<Project>().HasData(
+                new Project()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Test1",
+                    Description = "Test2",
+                    ImageUrl = "Test3",
+                    UrlGitHub = "Test4",
+                    UrlDemo = "Test5",
+                    SortNo = 1,
+                    IsValid = true,
+                },
+                new Project()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Test1",
+                    Description = "Test2",
+                    ImageUrl = "Test3",
+                    UrlGitHub = "Test4",
+                    UrlDemo = "Test5",
+                    SortNo = 1,
+                    IsValid = true,
+                });
+            }
 
     }
 }
