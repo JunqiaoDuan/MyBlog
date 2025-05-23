@@ -12,6 +12,7 @@
     public class MyBlogSetting_DataBase
     {
         public string? DatabaseSource { get; set; }
+        public string? LocalDatabaseConn { get; set; }
     }
 
     public class MyBlogSetting_Azure
