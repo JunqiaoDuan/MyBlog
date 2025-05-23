@@ -13,6 +13,8 @@ namespace MyBlog.Web.Configurations
     {
         public static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder, MyBlogSetting setting)
         {
+            Console.WriteLine("Test..");
+
             InjectContext(builder, setting);
             InjectRepository(builder, setting);
 
@@ -23,9 +25,13 @@ namespace MyBlog.Web.Configurations
 
         public static void InjectContext(WebApplicationBuilder builder, MyBlogSetting setting)
         {
+            Console.WriteLine(setting.DataBase.DatabaseSource);
+            Console.WriteLine(setting.DataBase.LocalDatabaseConn);
+
             if (IsSqlite(setting))
             {
                 InjectContext_Sqlite(builder, setting);
+                return;
             }
 
             InjectContext_Default(builder, setting);
@@ -54,7 +60,7 @@ namespace MyBlog.Web.Configurations
 
         public static void InjectContext_Sqlite(WebApplicationBuilder builder, MyBlogSetting setting)
         {
-            var sqlConnection = setting.DataBase.DatabaseSource;
+            var sqlConnection = setting.DataBase.LocalDatabaseConn;
 
             #region Service Repository
 

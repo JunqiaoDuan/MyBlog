@@ -12,6 +12,10 @@ namespace MyBlog.Infrastructure.Db.EF
     public class MyBlogContext : DbContext
     {
 
+        public MyBlogContext()
+        {
+        }
+
         public MyBlogContext(DbContextOptions<MyBlogContext> options)
             : base(options)
         {

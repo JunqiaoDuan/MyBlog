@@ -55,7 +55,13 @@ cd MyBlog
 dotnet restore
 ```
 
-4. Run the application
+4. Initialize database
+
+```
+dotnet ef database update  --project .\MyBlog.Infrastructure  --startup-project .\MyBlog.Web
+```
+
+5. Run the application
 
 ```bash
 dotnet run
