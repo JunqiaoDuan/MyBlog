@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyBlog.Service.Entities.ProfileAggregate;
 using MyBlog.Service.Entities.ProjectAggregate;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace MyBlog.Infrastructure.Db.EF
         #region Tables
 
         public DbSet<Project> Project { get; set; }
+        public DbSet<Profile> Profile { get; set; }
 
         #endregion
 
