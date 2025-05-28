@@ -9,24 +9,10 @@
     @if (!string.IsNullOrWhiteSpace(blogOwner?.Value))
     {
         <div class="mb-4 text-center">
-            <h1 class="display-4 fw-bold blog-title">
+            <h1 class="display-4 fw-bold blog-title artistic-title">
                 @blogOwner.Value
             </h1>
         </div>
-
-        <style>
-            .blog-title {
-                letter-spacing: 2px;
-                color: white;
-                text-shadow: 1px 2px 8px rgba(34,34,59,0.08);
-                margin-top: 6rem;
-                margin-bottom: 1rem;
-                font-family: 'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
-                border-bottom: 3px solid white;
-                display: inline-block;
-                padding-bottom: 0.25em;
-            }
-        </style>
     }
 
     <nav class="d-flex">

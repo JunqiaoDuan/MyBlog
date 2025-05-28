@@ -54,3 +54,33 @@ nav {
     background-color: rgba(255,255,255,0.1);
     color: white;
 }
+
+.blog-title {
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 1px 2px 8px rgba(34,34,59,0.08);
+    margin-top: 6rem;
+    margin-bottom: 1rem;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
+    display: inline-block;
+    padding-bottom: 0.25em;
+    transition: color 0.4s, text-shadow 0.4s;
+}
+
+.artistic-title {
+    color: #fff;
+    background: none;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0,0.15));
+    letter-spacing: 4px;
+    animation: floatTitle 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes floatTitle {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-12px);
+    }
+}
