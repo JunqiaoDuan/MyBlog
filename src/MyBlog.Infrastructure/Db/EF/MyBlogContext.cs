@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyBlog.Service.Entities.ProjectAgregate;
+using MyBlog.Service.Entities.ProjectAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;

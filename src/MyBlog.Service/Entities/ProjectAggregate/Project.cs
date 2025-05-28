@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyBlog.Service.Entities.ProjectAgregate
+namespace MyBlog.Service.Entities.ProjectAggregate
 {
     public class Project : BaseEntity, IAggregateRoot
     {

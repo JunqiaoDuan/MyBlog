@@ -1,4 +1,5 @@
 ﻿using Ardalis.Specification;
+using MyBlog.Service.Entities.ProfileAggregate;
 using MyBlog.Service.Entities.ProjectAggregate;
 using System;
 using System.Collections.Generic;
@@ -6,14 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyBlog.Service.Specifications.Projects
+namespace MyBlog.Service.Specifications.Profiles
 {
-    public class ProjectSpec : Specification<Project>
+    public class ProfileSpec : Specification<Profile>
     {
-        public ProjectSpec()
+        public ProfileSpec()
         {
-            Query.Where(p =>
-                p.IsValid == true);
+            Query.Where(i => i.IsValid == true);
         }
     }
 }

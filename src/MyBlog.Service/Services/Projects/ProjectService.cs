@@ -1,4 +1,4 @@
-﻿using MyBlog.Service.Entities.ProjectAgregate;
+﻿using MyBlog.Service.Entities.ProjectAggregate;
 using MyBlog.Service.Shared.Dtos.Queries;
 using MyBlog.Service.Shared.Interfaces.Projects;
 using MyBlog.Service.Shared.Repository;
