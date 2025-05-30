@@ -1,0 +1,59 @@
+﻿body {
+}
+
+.profile-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    color: rgb(80, 80, 80);
+    background: rgb(249, 249, 249, 1);
+}
+
+.profile-name {
+    text-align: center;
+    font-size: 1.6rem;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: block;
+    margin: 0 auto 1rem auto;
+    object-fit: cover;
+    aspect-ratio: 1/1;
+}
+
+.profile-location {
+    margin-top: 0.4rem;
+    text-align: center;
+    color: #888;
+}
+
+.profile-bio {
+    margin: 3rem 0;
+}
+
+.profile-contacts {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.profile-contact-content {
+    font-size: 1.5rem;
+}
+
+.profile-contact-link {
+    text-decoration: none;
+    color: #333;
+}
+
+.profile-contact-img {
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+}
