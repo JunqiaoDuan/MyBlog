@@ -35,28 +35,6 @@
 .profile-bio {
     margin: 3rem 0;
 }
-
-.profile-contacts {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 1.5rem;
-}
-
-.profile-contact-content {
-    font-size: 1.5rem;
-}
-
-.profile-contact-link {
-    text-decoration: none;
-    color: #333;
-}
-
-.profile-contact-img {
-    vertical-align: middle;
-    width: 24px;
-    height: 24px;
-}
 .profile-skills-list {
     display: flex;
     flex-direction: column;
@@ -99,4 +77,57 @@
 
 .profile-skill-item:hover img {
     filter: drop-shadow(0 2px 6px rgba(0,80,255,0.15)) !important;
+}
+
+.profile-contacts {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.profile-contact-content {
+    font-size: 1.5rem;
+}
+
+.profile-contact-link {
+    text-decoration: none;
+    color: #333;
+}
+
+.profile-contact-img {
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: inhale-exhale 2.4s infinite ease-in-out;
+}
+
+@keyframes inhale-exhale {
+    0% {
+        transform: scale(1);
+    }
+
+    20% {
+        transform: scale(1.12);
+    }
+
+    50% {
+        transform: scale(0.92);
+    }
+
+    80% {
+        transform: scale(1.12);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.profile-contact-link:hover .profile-contact-img,
+.profile-contact-link:focus .profile-contact-img {
+    animation: none;
+    transform: scale(1.18) rotate(-8deg);
+    filter: drop-shadow(0 0 8px #6cf);
 }
