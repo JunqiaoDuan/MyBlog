@@ -32,13 +32,9 @@ main {
 
 .sidebar {
     width: 100%;
-    position: sticky;
-    top: 0;
 }
 
 .top-row {
-    position: sticky;
-    top: 0;
     z-index: 1;
 }
 
