@@ -32,8 +32,26 @@ else
         @if (!string.IsNullOrEmpty(skills))
         {
             <div class="profile-skills">
-                <strong>Skills:</strong>
-                <div class="profile-skill">@skills</div>
+                <div>
+                    <strong>🛠️ Skills</strong>
+                </div>
+                <div class="profile-skills-list">
+                    @for (int i = 0; i < skillItems.Count; i++)
+                    {
+                        var items = skillItems[i];
+                        <div class="profile-skills-group">
+                            @for (int j = 0; j < items.Count; j++)
+                            {
+                                var item = items[j];
+                                var imgSrc = $"/icons/{item}.svg";
+                                <div class="profile-skill-item">
+                                    <img src="@imgSrc" alt="@item" title="@item" />
+                                    <span>@item</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
             </div>
         }
         <div class="profile-contacts">
@@ -74,6 +92,7 @@ else
     string? email;
     string? bio;
     string? skills;
+    List<List<string>> skillItems = new List<List<string>>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,6 +106,15 @@ else
         email = profileViews.FirstOrDefault(p => p.Name == "Email")?.Value;
         bio = profileViews.FirstOrDefault(p => p.Name == "Bio")?.Value;
         skills = profileViews.FirstOrDefault(p => p.Name == "Skills")?.Value;
+
+        if (!string.IsNullOrWhiteSpace(skills))
+        {
+            skillItems = skills
+                .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList())
+                .ToList();
+        }
+
     }
 
 }
