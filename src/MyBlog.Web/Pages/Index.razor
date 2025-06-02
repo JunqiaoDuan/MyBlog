@@ -1,9 +1,11 @@
 ﻿@using MyBlog.Service.Shared.Dtos.Queries
 @using MyBlog.Service.Shared.Interfaces.Profiles
+@using MyBlog.Service.Shared.Interfaces.Statistics
 
 @page "/"
 
 @inject IProfileService _profileService
+@inject IStatisticService _statisticService
 
 <PageTitle>About</PageTitle>
 
@@ -96,6 +98,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        #region profile
+
         var profileViews = await _profileService.GetProfilesAsync();
 
         avatar = profileViews.FirstOrDefault(p => p.Name == "Avatar")?.Value;
@@ -114,6 +118,14 @@ else
                 .Select(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList())
                 .ToList();
         }
+
+        #endregion
+
+        #region statistic
+
+        var pomodoroViews = await _statisticService.GetStatisticAsync("pomodoro-history");
+
+        #endregion
 
     }
 

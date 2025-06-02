@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyBlog.Service.Entities.ProfileAggregate;
 using MyBlog.Service.Entities.ProjectAggregate;
+using MyBlog.Service.Entities.StatisticAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace MyBlog.Infrastructure.Db.EF
 
         public DbSet<Project> Project { get; set; }
         public DbSet<Profile> Profile { get; set; }
+        public DbSet<Statistic> Statistic { get; set; }
 
         #endregion
 
