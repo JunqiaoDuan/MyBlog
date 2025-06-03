@@ -81,7 +81,7 @@
 
         #region prepare labels
 
-        var xLabels = dateMatrix[0]
+        var xLabels = dateMatrix[dateMatrix.Length - 1]
             .Select(i => getMonthNames(i))
             .ToList();
         xLabels = getMonthLabelsToDisplay(xLabels);
@@ -106,7 +106,7 @@
                 if (value.HasValue)
                 {
                     int totalMinutes = (int)Math.Round(value.Value * 60);
-                    return $"{FormatDateToString(d)} {FormatMinutesToHourMinute(totalMinutes)}";
+                    return $"{GetStandardDateString(d)} {FormatMinutesToHourMinute(totalMinutes)}";
                 }
                 else
                 {
@@ -145,7 +145,7 @@
 
         layout = new Layout
         {
-            Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Duration" },
+                Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Productivity Pulse" },
             XAxis = new List<XAxis>
             {
                 new XAxis
@@ -154,6 +154,10 @@
                     TickAngle = 0,
                     TickVals = Enumerable.Range(0, xLabels.Count).Cast<object>().ToList(),
                     TickText = xLabels.Cast<object>().ToList(),
+                    ShowGrid = false,
+                    ShowLine = false,
+                    LineWidth = 0,
+                    ZeroLine = false,
                 }
             },
             YAxis = new List<YAxis>
@@ -162,9 +166,12 @@
                 {
                     TickVals = Enumerable.Range(0, yLabels.Count).Cast<object>().ToList(),
                     TickText = yLabels.Cast<object>().ToList(),
+                    ShowGrid = false,
+                    ShowLine = false,
+                    ZeroLine = false,
                 }
             },
-            Height = 320,
+            Height = 400,
             Width = 600
         };
 
@@ -241,6 +248,12 @@
     private string FormatDateToString(DateTime date)
     {
         return date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+    }
+
+    private string GetStandardDateString(DateTime date)
+    {
+        // Returns date in format "Jan 1"
+        return date.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
     }
 
     private List<string> getMonthLabelsToDisplay(List<string> monthNames)
