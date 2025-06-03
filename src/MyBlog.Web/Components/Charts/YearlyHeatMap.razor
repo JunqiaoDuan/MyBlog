@@ -1,6 +1,6 @@
 ﻿@using MyBlog.Service.Shared.Dtos.VisualDto
 @using Plotly.Blazor
-﻿@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.LayoutLib
 @using Plotly.Blazor.LayoutLib.XAxisLib
 @using System.Globalization
 @using Plotly.Blazor.Traces
@@ -73,7 +73,7 @@
             var rowIdx = rowCount - 1 - (int)(idx % rowCount);  // reverse top-down
             var columnIdx = (int)(idx / rowCount);
 
-            valueMatrix[rowIdx][columnIdx] = _workData;
+            valueMatrix[rowIdx][columnIdx] = Math.Round(_workData / 60.0, 2);
             dateMatrix[rowIdx][columnIdx] = _currDate;
         }
 
@@ -100,7 +100,19 @@
         var customData = new List<List<string>>();
         for (int i = 0; i < dateMatrix.Length; i++)
         {
-            customData.Add(dateMatrix[i].Select(i => FormatDateToString(i)).ToList());
+            customData.Add(dateMatrix[i].Select((d, j) =>
+            {
+                var value = valueMatrix[i][j];
+                if (value.HasValue)
+                {
+                    int totalMinutes = (int)Math.Round(value.Value * 60);
+                    return $"{FormatDateToString(d)} {FormatMinutesToHourMinute(totalMinutes)}";
+                }
+                else
+                {
+                    return FormatDateToString(d);
+                }
+            }).ToList());
         }
 
         #endregion
@@ -120,7 +132,7 @@
                     new[] { "0.5", "#40c463" },
                     new[] { "1", "#216e39" }
                 },
-                HoverTemplate = "%{customdata} %{z}<extra></extra>min",
+                HoverTemplate = "%{customdata}<extra></extra>",
                 ShowScale = true,
                 XGap = 2,
                 YGap = 2
@@ -257,7 +269,7 @@
 
         for (int idx = 0; idx < names.Count; idx++)
         {
-            if (names[idx] == "Mon" 
+            if (names[idx] == "Mon"
                 || names[idx] == "Wed"
                 || names[idx] == "Fri")
             {
@@ -272,4 +284,16 @@
         return result;
     }
 
+    private string FormatMinutesToHourMinute(int totalMinutes)
+    {
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+        if (hours > 0 && minutes > 0)
+            return $"{hours}h{minutes}m";
+        if (hours > 0)
+            return $"{hours}h";
+        if (minutes > 0)
+            return $"{minutes}m";
+        return "0m";
+    }
 }
