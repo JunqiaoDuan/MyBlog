@@ -19,34 +19,31 @@
     private Layout? layout;
     private IList<ITrace>? data;
 
-    /// <inheritdoc />
     protected override void OnInitialized()
     {
         config = new Config
-            {
-                ShowLink = false,
-                Responsive = true,
-                DisplayLogo = false
-            };
+        {
+            ShowLink = false,
+            Responsive = true,
+            DisplayLogo = false
+        };
 
         layout = new Layout
+        {
+            Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Duration" },
+            XAxis = new List<XAxis>
             {
-                Title = new Plotly.Blazor.LayoutLib.Title { Text = "Work Duration Heatmap (2025)" },
-                XAxis = new List<XAxis>
-                {
-                    new XAxis { Side = SideEnum.Top, TickAngle = -45 }
-                },
-                YAxis = new List<YAxis>
-                {
-                    new YAxis { TickVals = Enumerable.Range(0, 14).Cast<object>().ToList() }
-                },
-                Height = 320,
-                Width = 600
-            };
+                new XAxis { Side = SideEnum.Top, TickAngle = -45 }
+            },
+            YAxis = new List<YAxis>
+            {
+                new YAxis { TickVals = Enumerable.Range(0, 14).Cast<object>().ToList() }
+            },
+            Height = 320,
+            Width = 600
+        };
 
         data = GetMapData().ToList();
-
-        AddAnnotations(layout, data.First());
 
         base.OnInitialized();
     }
@@ -140,26 +137,4 @@
         };
     }
 
-    private static void AddAnnotations(Layout layout, ITrace trace)
-    {
-        if (trace is not HeatMap { X: List<object> xValues, Y: List<object> yValues, Z: List<object> zValues }) return;
-
-        for (int y = 0; y < yValues.Count; y++)
-        {
-            for (int x = 0; x < xValues.Count; x++)
-            {
-                // var currentValue = ((double?[])zValues[y])[x];
-                // if (!currentValue.HasValue || currentValue == 0) continue;
-
-                // layout.Annotations.Add(new Annotation
-                //     {
-                //         X = xValues[x],
-                //         Y = yValues[y],
-                //         Text = currentValue.Value.ToString("0"),
-                //         Font = new Plotly.Blazor.LayoutLib.AnnotationLib.Font { Size = 10, Color = "white" },
-                //         ShowArrow = false
-                //     });
-            }
-        }
-    }
 }
