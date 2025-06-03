@@ -23,40 +23,12 @@
 
     protected override void OnInitialized()
     {
-        config = new Config
-        {
-            ShowLink = false,
-            Responsive = true,
-            DisplayLogo = false,
-        };
-
-        layout = new Layout
-        {
-            Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Duration" },
-            XAxis = new List<XAxis>
-            {
-                new XAxis
-                {
-                    Side = SideEnum.Top,
-                    TickAngle = 0,
-                }
-            },
-            YAxis = new List<YAxis>
-            {
-                new YAxis
-                {
-                }
-            },
-            Height = 320,
-            Width = 600
-        };
-
-        data = GetMapData().ToList();
+        InitHeatMap();
 
         base.OnInitialized();
     }
 
-    private IList<ITrace> GetMapData()
+    private void InitHeatMap()
     {
         #region process data
 
@@ -107,18 +79,23 @@
 
         #endregion
 
-        #region prepare data for plotly
-        var random = new Random();
+        #region prepare labels
+
         var xLabels = dateMatrix[0]
             .Select(i => getMonthNames(i))
-            .Select(i => $"{i}.{random.NextInt64(0, 999)}")
             .ToList();
+        xLabels = getMonthLabelsToDisplay(xLabels);
 
         var dayNamesOfWeek = getDayNamesOfWeekStartingFrom(startDay);
         var yLabels = new List<string>();
         yLabels.AddRange(dayNamesOfWeek);
-        yLabels.AddRange(dayNamesOfWeek.Select(i => $"{i}."));
+        yLabels.AddRange(dayNamesOfWeek);
         yLabels.Reverse();
+        yLabels = getDayOfWeekLabelsToDisplay(yLabels);
+
+        #endregion
+
+        #region prepare customData
 
         var customData = new List<List<string>>();
         for (int i = 0; i < dateMatrix.Length; i++)
@@ -128,12 +105,12 @@
 
         #endregion
 
-        return new List<ITrace>
+        #region generate retView
+
+        data = new List<ITrace>
         {
             new HeatMap
             {
-                X = xLabels.Cast<object>().ToList(),
-                Y = yLabels.Cast<object>().ToList(),
                 Z = valueMatrix.Cast<object>().ToList(),
                 CustomData = customData.Cast<object>().ToList(),
                 ColorScale = new[]
@@ -145,10 +122,53 @@
                 },
                 HoverTemplate = "%{customdata} %{z}<extra></extra>min",
                 ShowScale = true,
-                XGap = 2, // horizontal padding between cells (in px)
-                YGap = 2  // vertical padding between cells (in px)
+                XGap = 2,
+                YGap = 2
             }
         };
+
+        #endregion
+
+        #region generate layout
+
+        layout = new Layout
+        {
+            Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Duration" },
+            XAxis = new List<XAxis>
+            {
+                new XAxis
+                {
+                    Side = SideEnum.Top,
+                    TickAngle = 0,
+                    TickVals = Enumerable.Range(0, xLabels.Count).Cast<object>().ToList(),
+                    TickText = xLabels.Cast<object>().ToList(),
+                }
+            },
+            YAxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    TickVals = Enumerable.Range(0, yLabels.Count).Cast<object>().ToList(),
+                    TickText = yLabels.Cast<object>().ToList(),
+                }
+            },
+            Height = 320,
+            Width = 600
+        };
+
+        #endregion
+
+        #region generate config
+
+        config = new Config
+        {
+            ShowLink = false,
+            Responsive = true,
+            DisplayLogo = false,
+        };
+
+        #endregion
+
     }
 
     private void parseDataList(
@@ -209,6 +229,47 @@
     private string FormatDateToString(DateTime date)
     {
         return date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+    }
+
+    private List<string> getMonthLabelsToDisplay(List<string> monthNames)
+    {
+        var seen = new HashSet<string>();
+        var result = new List<string>();
+
+        foreach (var _monthName in monthNames)
+        {
+            if (seen.Contains(_monthName))
+            {
+                result.Add(string.Empty);
+            }
+            else
+            {
+                result.Add(_monthName);
+                seen.Add(_monthName);
+            }
+        }
+        return result;
+    }
+
+    private List<string> getDayOfWeekLabelsToDisplay(List<string> names)
+    {
+        var result = new List<string>();
+
+        for (int idx = 0; idx < names.Count; idx++)
+        {
+            if (names[idx] == "Mon" 
+                || names[idx] == "Wed"
+                || names[idx] == "Fri")
+            {
+                result.Add(names[idx]);
+            }
+            else
+            {
+                result.Add("");
+            }
+        }
+
+        return result;
     }
 
 }
