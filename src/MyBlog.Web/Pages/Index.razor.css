@@ -3,7 +3,7 @@
 
 .profile-container {
     max-width: 600px;
-    margin: 2rem auto;
+    margin: 0rem auto 6rem auto;
     padding-top: 3rem;
     padding-bottom: 2rem;
     border-radius: 12px;
@@ -41,6 +41,7 @@
 .profile-skills {
     padding-left: 4rem;
     padding-right: 4rem;
+    margin-bottom: 1rem;
 }
 .profile-skills-list {
     display: flex;
