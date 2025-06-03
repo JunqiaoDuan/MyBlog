@@ -19,13 +19,15 @@
     private Layout? layout;
     private IList<ITrace>? data;
 
+    const int RowCount = 14;
+
     protected override void OnInitialized()
     {
         config = new Config
         {
             ShowLink = false,
             Responsive = true,
-            DisplayLogo = false
+            DisplayLogo = false,
         };
 
         layout = new Layout
@@ -33,11 +35,17 @@
             Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Duration" },
             XAxis = new List<XAxis>
             {
-                new XAxis { Side = SideEnum.Top, TickAngle = -45 }
+                new XAxis
+                {
+                    Side = SideEnum.Top,
+                    TickAngle = 0,
+                }
             },
             YAxis = new List<YAxis>
             {
-                new YAxis { TickVals = Enumerable.Range(0, 14).Cast<object>().ToList() }
+                new YAxis
+                {
+                }
             },
             Height = 320,
             Width = 600
@@ -50,79 +58,83 @@
 
     private IList<ITrace> GetMapData()
     {
+        #region process data
+
         var workData = new List<DateIntValue>();
         if (DataList != null)
         {
-            workData = DataList.ToList();
+            workData = DataList
+                .OrderBy(i => i.Date)
+                .ToList();
         }
-        else
+
+        parseDataList(workData, out Dictionary<DateTime, int> workDataDic, out DateTime startDay, out DateTime endDay, out int durationDay);
+
+        #endregion
+
+        #region cal matrix
+
+        var rowCount = RowCount;
+        var coulmnCount = (int)Math.Ceiling(durationDay / (decimal)rowCount);
+
+        // init matrix
+        var valueMatrix = new double?[rowCount][];
+        var dateMatrix = new DateTime[rowCount][];
+        for (int i = 0; i < rowCount; i++)
         {
-            var startDate = new DateTime(DateTime.Now.Year, 1, 1);
-            var endDate = new DateTime(DateTime.Now.Year, 12, 31);
-            var rand = new Random();
-            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            valueMatrix[i] = new double?[coulmnCount];
+            dateMatrix[i] = new DateTime[coulmnCount];
+        }
+
+        // fill matrix
+        for (int idx = 0; idx < durationDay; idx++)
+        {
+            var _currDate = startDay.AddDays((double)idx);
+            var _currDateString = FormatDateToString(_currDate);
+
+            if (!workDataDic.ContainsKey(_currDate))
             {
-                workData.Add(new DateIntValue
-                    {
-                        Date = date.ToString("yyyyMMdd"),
-                        Value = rand.Next(0, 5),
-                    });
+                continue;
             }
+            var _workData = workDataDic[_currDate];
+
+            var rowIdx = rowCount - 1 - (int)(idx % rowCount);  // reverse top-down
+            var columnIdx = (int)(idx / rowCount);
+
+            valueMatrix[rowIdx][columnIdx] = _workData;
+            dateMatrix[rowIdx][columnIdx] = _currDate;
         }
 
-        var daysOfPeriod = Enumerable.Range(1, 14).Select(i => $"Day {i}").ToArray();
-        var weeksInYear = 53;
-        var zValues = new double?[daysOfPeriod.Length][];
-        var dateMatrix = new string[daysOfPeriod.Length][];
-        for (int i = 0; i < daysOfPeriod.Length; i++)
-        {
-            zValues[i] = new double?[weeksInYear];
-            dateMatrix[i] = new string[weeksInYear];
-        }
+        #endregion
 
-        var startDateForCalc = new DateTime(DateTime.Now.Year, 1, 1);
-        foreach (var record in workData)
-        {
-            var date = DateTime.ParseExact(record.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
-            var dayOfPeriod = (int)((date - startDateForCalc).TotalDays % 14);
-            var weekOfYear = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(
-                date, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+        #region prepare data for plotly
+        var random = new Random();
+        var xLabels = dateMatrix[0]
+            .Select(i => getMonthNames(i))
+            .Select(i => $"{i}.{random.NextInt64(0, 999)}")
+            .ToList();
 
-            if (weekOfYear >= 52 && date.Month == 1) weekOfYear = 0;
-            if (weekOfYear <= 1 && date.Month == 12) weekOfYear = 52;
-
-            zValues[dayOfPeriod][weekOfYear - 1] = record.Value;
-            dateMatrix[dayOfPeriod][weekOfYear - 1] = date.ToString("yyyy-MM-dd");
-        }
-
-        var firstNonEmptyWeek = 0;
-        var lastNonEmptyWeek = weeksInYear - 1;
-        while (firstNonEmptyWeek < weeksInYear && zValues.All(row => !row[firstNonEmptyWeek].HasValue))
-            firstNonEmptyWeek++;
-        while (lastNonEmptyWeek >= 0 && zValues.All(row => !row[lastNonEmptyWeek].HasValue))
-            lastNonEmptyWeek--;
-
-        var trimmedZValues = zValues.Select(row => row.Skip(firstNonEmptyWeek).Take(lastNonEmptyWeek - firstNonEmptyWeek + 1).ToArray()).ToArray();
-        var trimmedDateMatrix = dateMatrix.Select(row => row.Skip(firstNonEmptyWeek).Take(lastNonEmptyWeek - firstNonEmptyWeek + 1).ToArray()).ToArray();
-
-        var xLabels = Enumerable.Range(firstNonEmptyWeek + 1, lastNonEmptyWeek - firstNonEmptyWeek + 1)
-                                .Select(w => $"W{w}")
-                                .Cast<object>()
-                                .ToList();
+        var dayNamesOfWeek = getDayNamesOfWeekStartingFrom(startDay);
+        var yLabels = new List<string>();
+        yLabels.AddRange(dayNamesOfWeek);
+        yLabels.AddRange(dayNamesOfWeek.Select(i => $"{i}."));
+        yLabels.Reverse();
 
         var customData = new List<List<string>>();
-        for (int i = 0; i < trimmedDateMatrix.Length; i++)
+        for (int i = 0; i < dateMatrix.Length; i++)
         {
-            customData.Add(trimmedDateMatrix[i].ToList());
+            customData.Add(dateMatrix[i].Select(i => FormatDateToString(i)).ToList());
         }
+
+        #endregion
 
         return new List<ITrace>
         {
             new HeatMap
             {
-                X = xLabels,
-                Y = daysOfPeriod.Cast<object>().ToList(),
-                Z = trimmedZValues.Cast<object>().ToList(),
+                X = xLabels.Cast<object>().ToList(),
+                Y = yLabels.Cast<object>().ToList(),
+                Z = valueMatrix.Cast<object>().ToList(),
                 CustomData = customData.Cast<object>().ToList(),
                 ColorScale = new[]
                 {
@@ -132,9 +144,71 @@
                     new[] { "1", "#216e39" }
                 },
                 HoverTemplate = "%{customdata} %{z}<extra></extra>min",
-                ShowScale = true
+                ShowScale = true,
+                XGap = 2, // horizontal padding between cells (in px)
+                YGap = 2  // vertical padding between cells (in px)
             }
         };
+    }
+
+    private void parseDataList(
+        List<DateIntValue> dateValues,
+        out Dictionary<DateTime, int> dateValuesDic,
+        out DateTime startDay,
+        out DateTime endDay,
+        out int durationDay)
+    {
+        dateValuesDic = new Dictionary<DateTime, int>();
+
+        if (dateValues == null || dateValues.Count == 0)
+        {
+            startDay = endDay = DateTime.MinValue;
+            durationDay = 0;
+            return;
+        }
+
+        var ordered = dateValues
+            .OrderBy(d => d.Date)
+            .ToList();
+
+        startDay = ParseDateString(ordered.First().Date);
+        endDay = ParseDateString(ordered.Last().Date);
+        durationDay = (endDay - startDay).Days + 1;
+
+        foreach (var item in dateValues)
+        {
+            var date = ParseDateString(item.Date);
+            if (!dateValuesDic.ContainsKey(date))
+            {
+                dateValuesDic.Add(date, item.Value);
+            }
+        }
+    }
+
+    private List<string> getDayNamesOfWeekStartingFrom(DateTime startDate)
+    {
+        var dayNames = new List<string>();
+        for (int i = 0; i < 7; i++)
+        {
+            var day = startDate.AddDays(i);
+            dayNames.Add(day.ToString("ddd", CultureInfo.InvariantCulture));
+        }
+        return dayNames;
+    }
+
+    private string getMonthNames(DateTime date)
+    {
+        return date.ToString("MMM", CultureInfo.InvariantCulture);
+    }
+
+    private DateTime ParseDateString(string dateString)
+    {
+        return DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+    }
+
+    private string FormatDateToString(DateTime date)
+    {
+        return date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
     }
 
 }
