@@ -1,0 +1,165 @@
+﻿@using MyBlog.Service.Shared.Dtos.VisualDto
+@using Plotly.Blazor
+﻿@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.LayoutLib.XAxisLib
+@using System.Globalization
+@using Plotly.Blazor.Traces
+
+<div style="height:320px; min-height:320px; width:600px;">
+    <PlotlyChart style="height:100%; width:100%;" @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart" />
+</div>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<DateIntValue>? DataList { get; set; }
+
+    private PlotlyChart? chart;
+    private Config? config;
+    private Layout? layout;
+    private IList<ITrace>? data;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        config = new Config
+            {
+                ShowLink = false,
+                Responsive = true,
+                DisplayLogo = false
+            };
+
+        layout = new Layout
+            {
+                Title = new Plotly.Blazor.LayoutLib.Title { Text = "Work Duration Heatmap (2025)" },
+                XAxis = new List<XAxis>
+                {
+                    new XAxis { Side = SideEnum.Top, TickAngle = -45 }
+                },
+                YAxis = new List<YAxis>
+                {
+                    new YAxis { TickVals = Enumerable.Range(0, 14).Cast<object>().ToList() }
+                },
+                Height = 320,
+                Width = 600
+            };
+
+        data = GetMapData().ToList();
+
+        AddAnnotations(layout, data.First());
+
+        base.OnInitialized();
+    }
+
+    private IList<ITrace> GetMapData()
+    {
+        var workData = new List<DateIntValue>();
+        if (DataList != null)
+        {
+            workData = DataList.ToList();
+        }
+        else
+        {
+            var startDate = new DateTime(DateTime.Now.Year, 1, 1);
+            var endDate = new DateTime(DateTime.Now.Year, 12, 31);
+            var rand = new Random();
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                workData.Add(new DateIntValue
+                    {
+                        Date = date.ToString("yyyyMMdd"),
+                        Value = rand.Next(0, 5),
+                    });
+            }
+        }
+
+        var daysOfPeriod = Enumerable.Range(1, 14).Select(i => $"Day {i}").ToArray();
+        var weeksInYear = 53;
+        var zValues = new double?[daysOfPeriod.Length][];
+        var dateMatrix = new string[daysOfPeriod.Length][];
+        for (int i = 0; i < daysOfPeriod.Length; i++)
+        {
+            zValues[i] = new double?[weeksInYear];
+            dateMatrix[i] = new string[weeksInYear];
+        }
+
+        var startDateForCalc = new DateTime(DateTime.Now.Year, 1, 1);
+        foreach (var record in workData)
+        {
+            var date = DateTime.ParseExact(record.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
+            var dayOfPeriod = (int)((date - startDateForCalc).TotalDays % 14);
+            var weekOfYear = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(
+                date, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+
+            if (weekOfYear >= 52 && date.Month == 1) weekOfYear = 0;
+            if (weekOfYear <= 1 && date.Month == 12) weekOfYear = 52;
+
+            zValues[dayOfPeriod][weekOfYear - 1] = record.Value;
+            dateMatrix[dayOfPeriod][weekOfYear - 1] = date.ToString("yyyy-MM-dd");
+        }
+
+        var firstNonEmptyWeek = 0;
+        var lastNonEmptyWeek = weeksInYear - 1;
+        while (firstNonEmptyWeek < weeksInYear && zValues.All(row => !row[firstNonEmptyWeek].HasValue))
+            firstNonEmptyWeek++;
+        while (lastNonEmptyWeek >= 0 && zValues.All(row => !row[lastNonEmptyWeek].HasValue))
+            lastNonEmptyWeek--;
+
+        var trimmedZValues = zValues.Select(row => row.Skip(firstNonEmptyWeek).Take(lastNonEmptyWeek - firstNonEmptyWeek + 1).ToArray()).ToArray();
+        var trimmedDateMatrix = dateMatrix.Select(row => row.Skip(firstNonEmptyWeek).Take(lastNonEmptyWeek - firstNonEmptyWeek + 1).ToArray()).ToArray();
+
+        var xLabels = Enumerable.Range(firstNonEmptyWeek + 1, lastNonEmptyWeek - firstNonEmptyWeek + 1)
+                                .Select(w => $"W{w}")
+                                .Cast<object>()
+                                .ToList();
+
+        var customData = new List<List<string>>();
+        for (int i = 0; i < trimmedDateMatrix.Length; i++)
+        {
+            customData.Add(trimmedDateMatrix[i].ToList());
+        }
+
+        return new List<ITrace>
+        {
+            new HeatMap
+            {
+                X = xLabels,
+                Y = daysOfPeriod.Cast<object>().ToList(),
+                Z = trimmedZValues.Cast<object>().ToList(),
+                CustomData = customData.Cast<object>().ToList(),
+                ColorScale = new[]
+                {
+                    new[] { "0", "#ebedf0" },
+                    new[] { "0.1", "#9be9a8" },
+                    new[] { "0.5", "#40c463" },
+                    new[] { "1", "#216e39" }
+                },
+                HoverTemplate = "%{customdata} %{z}<extra></extra>min",
+                ShowScale = true
+            }
+        };
+    }
+
+    private static void AddAnnotations(Layout layout, ITrace trace)
+    {
+        if (trace is not HeatMap { X: List<object> xValues, Y: List<object> yValues, Z: List<object> zValues }) return;
+
+        for (int y = 0; y < yValues.Count; y++)
+        {
+            for (int x = 0; x < xValues.Count; x++)
+            {
+                // var currentValue = ((double?[])zValues[y])[x];
+                // if (!currentValue.HasValue || currentValue == 0) continue;
+
+                // layout.Annotations.Add(new Annotation
+                //     {
+                //         X = xValues[x],
+                //         Y = yValues[y],
+                //         Text = currentValue.Value.ToString("0"),
+                //         Font = new Plotly.Blazor.LayoutLib.AnnotationLib.Font { Size = 10, Color = "white" },
+                //         ShowArrow = false
+                //     });
+            }
+        }
+    }
+}

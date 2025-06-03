@@ -1,6 +1,10 @@
-﻿@using MyBlog.Service.Shared.Dtos.Queries
+﻿@using MyBlog.Service.Shared.Dtos.ExternalDto.Dida365
+@using MyBlog.Service.Shared.Dtos.Queries
+@using MyBlog.Service.Shared.Dtos.VisualDto
 @using MyBlog.Service.Shared.Interfaces.Profiles
 @using MyBlog.Service.Shared.Interfaces.Statistics
+@using System.Text.Json
+@using MyBlog.Web.Components.Charts
 
 @page "/"
 
@@ -56,6 +60,11 @@ else
                 </div>
             </div>
         }
+
+        @* chart *@
+        <YearlyHeatMap DataList="yearlyWorks"></YearlyHeatMap>
+
+        @* contact *@
         <div class="profile-contacts">
             @if (!string.IsNullOrEmpty(github))
             {
@@ -96,6 +105,8 @@ else
     string? skills;
     List<List<string>> skillItems = new List<List<string>>();
 
+    List<DateIntValue> yearlyWorks = new List<DateIntValue>();
+
     protected override async Task OnInitializedAsync()
     {
         #region profile
@@ -123,7 +134,29 @@ else
 
         #region statistic
 
-        var pomodoroViews = await _statisticService.GetStatisticAsync("pomodoro-history");
+        var pomodoroJsons = await _statisticService.GetStatisticAsync("pomodoro-history");
+        var pomodoroJson = pomodoroJsons.FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(pomodoroJson?.Value))
+        {
+            var pomodoroViews = JsonSerializer.Deserialize<List<Dida365PomodoroHistoryDto>>(
+                pomodoroJson.Value,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            if (pomodoroViews != null)
+            {
+                yearlyWorks = pomodoroViews
+                   .Select(i => new DateIntValue()
+                       {
+                           Date = i.Day,
+                           // pomodoro ratio: 10-min break every hour
+                           Value = (int)((double)i.Duration * 6 / 5),
+                       })
+                   .ToList();
+            }
+        }
 
         #endregion
 
