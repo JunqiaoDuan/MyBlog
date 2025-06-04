@@ -1,7 +1,7 @@
 
 A modern, full-stack blog application built with ASP.NET Core and Blazor Server.
 
-[View Live](drinduan.com)
+[View Live](https://www.drinduan.com)
 
 ## 🚀 Features
 
