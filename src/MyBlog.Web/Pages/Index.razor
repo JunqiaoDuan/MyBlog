@@ -1,6 +1,7 @@
 ﻿@using MyBlog.Service.Shared.Dtos.ExternalDto.Dida365
 @using MyBlog.Service.Shared.Dtos.Queries
 @using MyBlog.Service.Shared.Dtos.VisualDto
+@using MyBlog.Service.Shared.Interfaces.ExternalInterface
 @using MyBlog.Service.Shared.Interfaces.Profiles
 @using MyBlog.Service.Shared.Interfaces.Statistics
 @using System.Text.Json
@@ -10,6 +11,7 @@
 
 @inject IProfileService _profileService
 @inject IStatisticService _statisticService
+@inject IYearlyHeatMapService _yearlyHeatMapService;
 
 <PageTitle>About</PageTitle>
 
@@ -132,33 +134,7 @@ else
 
         #endregion
 
-        #region statistic
-
-        var pomodoroJsons = await _statisticService.GetStatisticAsync("pomodoro-history");
-        var pomodoroJson = pomodoroJsons.FirstOrDefault();
-        if (!string.IsNullOrWhiteSpace(pomodoroJson?.Value))
-        {
-            var pomodoroViews = JsonSerializer.Deserialize<List<Dida365PomodoroHistoryDto>>(
-                pomodoroJson.Value,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-            if (pomodoroViews != null)
-            {
-                yearlyWorks = pomodoroViews
-                   .Select(i => new DateIntValue()
-                       {
-                           Date = i.Day,
-                           // pomodoro ratio: 10-min break every hour
-                           Value = (int)((double)i.Duration * 6 / 5),
-                       })
-                   .ToList();
-            }
-        }
-
-        #endregion
+        yearlyWorks = await _yearlyHeatMapService.GetHeatMapDataAsync();
 
     }
 
