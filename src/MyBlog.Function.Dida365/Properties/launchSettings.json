@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Dida365Management": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7218",
+      "launchBrowser": false
+    }
+  }
+}

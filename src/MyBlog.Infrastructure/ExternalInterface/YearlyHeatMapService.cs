@@ -70,8 +70,61 @@ namespace MyBlog.Infrastructure.ExternalInterface
 
         public async Task SaveHeatMapAsync()
         {
-            throw new NotImplementedException();
+            // Step 1: Simulate login to https://dida365.com/signin using phone number and password
+            // For demo, use placeholders. In production, use secure storage for credentials.
+            var phone = "YOUR_PHONE_NUMBER";
+            var password = "YOUR_PASSWORD";
+            
+            using var handler = new HttpClientHandler 
+            { 
+                UseCookies = true, 
+                CookieContainer = new System.Net.CookieContainer() 
+            };
+            using var client = new HttpClient(handler);
+
+            // Prepare login payload
+            var loginPayload = new
+            {
+                username = phone,
+                password = password
+            };
+            var loginContent = new StringContent(
+                JsonSerializer.Serialize(loginPayload), 
+                Encoding.UTF8, 
+                "application/json"
+            );
+
+            // Step 2: Retrieve all cookies from the response of the API: https://api.dida365.com/api/v2/user/signon?wc=true&remember=true
+            var loginResponse = await client.PostAsync("https://api.dida365.com/api/v2/user/signon?wc=true&remember=true", loginContent);
+            loginResponse.EnsureSuccessStatusCode();
+
+            // Cookies are now stored in handler.CookieContainer
+
+            // Step 3: Fetch HeatMap data from the API: https://api.dida365.com/api/v2/pomodoros/statistics/heatmap/20250101/20251231
+            //         Note: Use the cookies obtained above and recalculate the start and end dates for the year
+            var year = DateTime.Now.Year;
+            var startDate = new DateTime(year, 1, 1).ToString("yyyyMMdd");
+            var endDate = new DateTime(year, 12, 31).ToString("yyyyMMdd");
+            var heatmapUrl = $"https://api.dida365.com/api/v2/pomodoros/statistics/heatmap/{startDate}/{endDate}";
+
+            var heatmapRequest = new HttpRequestMessage(HttpMethod.Get, heatmapUrl);
+            // Attach cookies automatically via handler
+
+            var heatmapResponse = await client.SendAsync(heatmapRequest);
+            heatmapResponse.EnsureSuccessStatusCode();
+
+            var heatmapJson = await heatmapResponse.Content.ReadAsStringAsync();
+
+            // TODO: Save heatmapJson to your statistics service or database as needed
+            // Example:
+            // await _statisticService.SaveStatisticAsync("pomodoro-history", heatmapJson);
         }
+
+        #endregion
+
+        #region Save Heat Map
+
+
 
         #endregion
 
