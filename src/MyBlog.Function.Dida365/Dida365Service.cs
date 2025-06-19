@@ -27,7 +27,7 @@ namespace MyBlog.Function.Dida365
                 $"C# Timer trigger function executed at: {DateTime.Now}"
             );
 
-            await _yearlyHeatMapService.SaveHeatMapAsync();
+            await _yearlyHeatMapService.ScrapeAndSaveToDbAsync();
 
             log.LogInformation(
                 $"C# Timer trigger function executed compeletely at: {DateTime.Now}"

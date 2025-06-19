@@ -10,6 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
+using Microsoft.Playwright;
 
 namespace MyBlog.Infrastructure.ExternalInterface
 {
@@ -32,7 +35,7 @@ namespace MyBlog.Infrastructure.ExternalInterface
 
         #region public
 
-        public async Task<List<DateIntValue>> GetHeatMapDataAsync()
+        public async Task<List<DateIntValue>> ReadFromDbAsync()
         {
             var retViews = new List<DateIntValue>();
 
@@ -68,63 +71,126 @@ namespace MyBlog.Infrastructure.ExternalInterface
             return yearlyWorks;
         }
 
-        public async Task SaveHeatMapAsync()
+        public async Task ScrapeAndSaveToDbAsync()
         {
-            // Step 1: Simulate login to https://dida365.com/signin using phone number and password
-            // For demo, use placeholders. In production, use secure storage for credentials.
-            var phone = "YOUR_PHONE_NUMBER";
-            var password = "YOUR_PASSWORD";
-            
-            using var handler = new HttpClientHandler 
-            { 
-                UseCookies = true, 
-                CookieContainer = new System.Net.CookieContainer() 
-            };
-            using var client = new HttpClient(handler);
 
-            // Prepare login payload
-            var loginPayload = new
-            {
-                username = phone,
-                password = password
-            };
-            var loginContent = new StringContent(
-                JsonSerializer.Serialize(loginPayload), 
-                Encoding.UTF8, 
-                "application/json"
-            );
+            var userCredential = await getUserCredentialAsync();
+            await saveHeatMapDataAsync();
 
-            // Step 2: Retrieve all cookies from the response of the API: https://api.dida365.com/api/v2/user/signon?wc=true&remember=true
-            var loginResponse = await client.PostAsync("https://api.dida365.com/api/v2/user/signon?wc=true&remember=true", loginContent);
-            loginResponse.EnsureSuccessStatusCode();
-
-            // Cookies are now stored in handler.CookieContainer
-
-            // Step 3: Fetch HeatMap data from the API: https://api.dida365.com/api/v2/pomodoros/statistics/heatmap/20250101/20251231
-            //         Note: Use the cookies obtained above and recalculate the start and end dates for the year
-            var year = DateTime.Now.Year;
-            var startDate = new DateTime(year, 1, 1).ToString("yyyyMMdd");
-            var endDate = new DateTime(year, 12, 31).ToString("yyyyMMdd");
-            var heatmapUrl = $"https://api.dida365.com/api/v2/pomodoros/statistics/heatmap/{startDate}/{endDate}";
-
-            var heatmapRequest = new HttpRequestMessage(HttpMethod.Get, heatmapUrl);
-            // Attach cookies automatically via handler
-
-            var heatmapResponse = await client.SendAsync(heatmapRequest);
-            heatmapResponse.EnsureSuccessStatusCode();
-
-            var heatmapJson = await heatmapResponse.Content.ReadAsStringAsync();
-
-            // TODO: Save heatmapJson to your statistics service or database as needed
-            // Example:
-            // await _statisticService.SaveStatisticAsync("pomodoro-history", heatmapJson);
         }
 
         #endregion
 
         #region Save Heat Map
 
+        private async Task<string> getUserCredentialAsync()
+        {
+            var retDic = new Dictionary<string, string>();
 
+            // Install Playwright browsers (only needed once)
+            // Run this command manually first: 
+            // powershell -ExecutionPolicy Bypass -File playwright.ps1 install
+
+            using var playwright = await Playwright.CreateAsync();
+            await using var browser = await playwright.Chromium.LaunchAsync(new()
+            {
+                Headless = true, // Set to false for debugging
+                Timeout = 60000
+            });
+
+            var page = await browser.NewPageAsync();
+
+            try
+            {
+                // Step 1: Navigate to login page
+                await page.GotoAsync("https://dida365.com/signin", new()
+                {
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 9000
+                });
+
+                // Step 2: Fill credentials
+                var username = "djq321@126.com";
+                var password = "MOSIV20dd";
+                await page.FillAsync("input[id='emailOrPhone']", username);
+                await page.FillAsync("input[id='password']", password);
+
+                // Step 3: Click login button
+                await page.ClickAsync("button:has-text('登录')");
+
+                // Wait for navigation to complete
+                await page.WaitForURLAsync(url => url.Contains("webapp"), new()
+                {
+                    Timeout = 9000
+                });
+
+                // Step 4: Get cookies
+                var browserCookies = await page.Context.CookiesAsync();
+
+                // Step 5: Get Data from api
+
+
+                // Example usage inside getUserCredentialAsync or another method:
+                var year = DateTime.Now.Year;
+                var startDate = DateTime.Now.AddYears(-1).AddDays(1).ToString("yyyyMMdd");
+                var endDate = DateTime.Now.ToString("yyyyMMdd");
+                var heatmapUrl = $"https://api.dida365.com/api/v2/pomodoros/statistics/heatmap/{startDate}/{endDate}";
+
+                var cookies = browserCookies
+                    .GroupBy(c => c.Name)
+                    .Select(g => g.First())
+                    .ToDictionary(c => c.Name, c => c.Value);
+                // No changes needed for the selected line as it does not repeat within the current method or file context.
+                var heatmapJson = await FetchHeatMapDataAsync(cookies, heatmapUrl);
+
+
+
+                return heatmapJson;
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+            }
+            finally
+            {
+                await browser.CloseAsync();
+
+            }
+            return "";
+
+        }
+
+        private async Task<string> FetchHeatMapDataAsync(Dictionary<string, string> cookies, string heatmapUrl)
+        {
+            using var handler = new HttpClientHandler();
+            using var client = new HttpClient(handler);
+
+            // Build cookie header
+            var cookieHeader = string.Join("; ", cookies.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+            var request = new HttpRequestMessage(HttpMethod.Get, heatmapUrl);
+            request.Headers.Add("Cookie", cookieHeader);
+            request.Headers.Add("User-Agent", "Mozilla/5.0 (compatible; YearlyHeatMapService/1.0)");
+
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        private async Task saveHeatMapDataAsync()
+        {
+            // Step 3: Fetch HeatMap data from the API using the authenticated session
+
+            // Cookies are handled by handler.CookieContainer
+
+            //var heatmapResponse = await client.SendAsync(heatmapRequest);
+            //heatmapResponse.EnsureSuccessStatusCode();
+
+            //var heatmapJson = await heatmapResponse.Content.ReadAsStringAsync();
+
+            // TODO: Save heatmapJson to your statistics service or database as needed
+            // Example:
+            // await _statisticService.SaveStatisticAsync("pomodoro-history", heatmapJson);
+        }
 
         #endregion
 

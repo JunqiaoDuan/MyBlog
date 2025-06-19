@@ -9,7 +9,7 @@ namespace MyBlog.Service.Shared.Interfaces.ExternalInterface
 {
     public interface IYearlyHeatMapService
     {
-        public Task<List<DateIntValue>> GetHeatMapDataAsync();
-        public Task SaveHeatMapAsync();
+        public Task<List<DateIntValue>> ReadFromDbAsync();
+        public Task ScrapeAndSaveToDbAsync();
     }
 }
