@@ -54,12 +54,3 @@
         </div>
     }
 </div>
-
-@code {
-    private IEnumerable<ProjectQueryView>? projects;
-
-    protected override async Task OnInitializedAsync()
-    {
-        projects = await _projectService.GetProjectsAsync();
-    }
-}

@@ -1,0 +1,313 @@
+﻿using MyBlog.Service.Shared.Dtos.VisualDto;
+using Plotly.Blazor;
+using Plotly.Blazor.LayoutLib;
+using Plotly.Blazor.LayoutLib.XAxisLib;
+using System.Globalization;
+using Plotly.Blazor.Traces;
+using Microsoft.AspNetCore.Components;
+
+namespace MyBlog.Web.Components.Charts
+{
+    public partial class YearlyHeatMap
+    {
+
+        [Parameter]
+        public IEnumerable<DateIntValue>? DataList { get; set; }
+
+        private PlotlyChart? chart;
+        private Config? config;
+        private Layout? layout;
+        private IList<ITrace>? data;
+
+        const int RowCount = 14;
+
+        protected override void OnInitialized()
+        {
+            InitHeatMap();
+
+            base.OnInitialized();
+        }
+
+        private void InitHeatMap()
+        {
+            #region process data
+
+            var workData = new List<DateIntValue>();
+            if (DataList != null)
+            {
+                workData = DataList
+                    .OrderBy(i => i.Date)
+                    .ToList();
+            }
+
+            parseDataList(workData, out Dictionary<DateTime, int> workDataDic, out DateTime startDay, out DateTime endDay, out int durationDay);
+
+            #endregion
+
+            #region cal matrix
+
+            var rowCount = RowCount;
+            var coulmnCount = (int)Math.Ceiling(durationDay / (decimal)rowCount);
+
+            // init matrix
+            var valueMatrix = new double?[rowCount][];
+            var dateMatrix = new DateTime[rowCount][];
+            for (int i = 0; i < rowCount; i++)
+            {
+                valueMatrix[i] = new double?[coulmnCount];
+                dateMatrix[i] = new DateTime[coulmnCount];
+            }
+
+            // fill matrix
+            for (int idx = 0; idx < durationDay; idx++)
+            {
+                var _currDate = startDay.AddDays((double)idx);
+                var _currDateString = FormatDateToString(_currDate);
+
+                if (!workDataDic.ContainsKey(_currDate))
+                {
+                    continue;
+                }
+                var _workData = workDataDic[_currDate];
+
+                var rowIdx = rowCount - 1 - (int)(idx % rowCount);  // reverse top-down
+                var columnIdx = (int)(idx / rowCount);
+
+                valueMatrix[rowIdx][columnIdx] = Math.Round(_workData / 60.0, 2);
+                dateMatrix[rowIdx][columnIdx] = _currDate;
+            }
+
+            #endregion
+
+            #region prepare labels
+
+            var xLabels = dateMatrix[dateMatrix.Length - 1]
+                .Select(i => getMonthNames(i))
+                .ToList();
+            xLabels = getMonthLabelsToDisplay(xLabels);
+
+            var dayNamesOfWeek = getDayNamesOfWeekStartingFrom(startDay);
+            var yLabels = new List<string>();
+            yLabels.AddRange(dayNamesOfWeek);
+            yLabels.AddRange(dayNamesOfWeek);
+            yLabels.Reverse();
+            yLabels = getDayOfWeekLabelsToDisplay(yLabels);
+
+            #endregion
+
+            #region prepare customData
+
+            var customData = new List<List<string>>();
+            for (int i = 0; i < dateMatrix.Length; i++)
+            {
+                customData.Add(dateMatrix[i].Select((d, j) =>
+                {
+                    var value = valueMatrix[i][j];
+                    if (value.HasValue)
+                    {
+                        int totalMinutes = (int)Math.Round(value.Value * 60);
+                        return $"{GetStandardDateString(d)} {FormatMinutesToHourMinute(totalMinutes)}";
+                    }
+                    else
+                    {
+                        return $"No Data";
+                    }
+                }).ToList());
+            }
+
+            #endregion
+
+            #region generate retView
+
+            data = new List<ITrace>
+        {
+            new HeatMap
+            {
+                Z = valueMatrix.Cast<object>().ToList(),
+                CustomData = customData.Cast<object>().ToList(),
+                ColorScale = new[]
+                {
+                    new[] { "0", "#ebedf0" },
+                    new[] { "0.1", "#9be9a8" },
+                    new[] { "0.5", "#40c463" },
+                    new[] { "1", "#216e39" }
+                },
+                HoverTemplate = "%{customdata}<extra></extra>",
+                ShowScale = true,
+                XGap = 2,
+                YGap = 2
+            }
+        };
+
+            #endregion
+
+            #region generate layout
+
+            layout = new Layout
+            {
+                Title = new Plotly.Blazor.LayoutLib.Title { Text = "Pomodoro Productivity Pulse" },
+                XAxis = new List<XAxis>
+            {
+                new XAxis
+                {
+                    Side = SideEnum.Top,
+                    TickAngle = 0,
+                    TickVals = Enumerable.Range(0, xLabels.Count).Cast<object>().ToList(),
+                    TickText = xLabels.Cast<object>().ToList(),
+                    ShowGrid = false,
+                    ShowLine = false,
+                    LineWidth = 0,
+                    ZeroLine = false,
+                }
+            },
+                YAxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    TickVals = Enumerable.Range(0, yLabels.Count).Cast<object>().ToList(),
+                    TickText = yLabels.Cast<object>().ToList(),
+                    ShowGrid = false,
+                    ShowLine = false,
+                    ZeroLine = false,
+                }
+            },
+                Height = 400,
+                Width = 600
+            };
+
+            #endregion
+
+            #region generate config
+
+            config = new Config
+            {
+                ShowLink = false,
+                Responsive = true,
+                DisplayLogo = false,
+            };
+
+            #endregion
+
+        }
+
+        private void parseDataList(
+            List<DateIntValue> dateValues,
+            out Dictionary<DateTime, int> dateValuesDic,
+            out DateTime startDay,
+            out DateTime endDay,
+            out int durationDay)
+        {
+            dateValuesDic = new Dictionary<DateTime, int>();
+
+            if (dateValues == null || dateValues.Count == 0)
+            {
+                startDay = endDay = DateTime.MinValue;
+                durationDay = 0;
+                return;
+            }
+
+            var ordered = dateValues
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            startDay = ParseDateString(ordered.First().Date);
+            endDay = ParseDateString(ordered.Last().Date);
+            durationDay = (endDay - startDay).Days + 1;
+
+            foreach (var item in dateValues)
+            {
+                var date = ParseDateString(item.Date);
+                if (!dateValuesDic.ContainsKey(date))
+                {
+                    dateValuesDic.Add(date, item.Value);
+                }
+            }
+        }
+
+        private List<string> getDayNamesOfWeekStartingFrom(DateTime startDate)
+        {
+            var dayNames = new List<string>();
+            for (int i = 0; i < 7; i++)
+            {
+                var day = startDate.AddDays(i);
+                dayNames.Add(day.ToString("ddd", CultureInfo.InvariantCulture));
+            }
+            return dayNames;
+        }
+
+        private string getMonthNames(DateTime date)
+        {
+            return date.ToString("MMM", CultureInfo.InvariantCulture);
+        }
+
+        private DateTime ParseDateString(string dateString)
+        {
+            return DateTime.ParseExact(dateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+        }
+
+        private string FormatDateToString(DateTime date)
+        {
+            return date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+        }
+
+        private string GetStandardDateString(DateTime date)
+        {
+            // Returns date in format "Jan 1"
+            return date.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
+        }
+
+        private List<string> getMonthLabelsToDisplay(List<string> monthNames)
+        {
+            var seen = new HashSet<string>();
+            var result = new List<string>();
+
+            foreach (var _monthName in monthNames)
+            {
+                if (seen.Contains(_monthName))
+                {
+                    result.Add(string.Empty);
+                }
+                else
+                {
+                    result.Add(_monthName);
+                    seen.Add(_monthName);
+                }
+            }
+            return result;
+        }
+
+        private List<string> getDayOfWeekLabelsToDisplay(List<string> names)
+        {
+            var result = new List<string>();
+
+            for (int idx = 0; idx < names.Count; idx++)
+            {
+                if (names[idx] == "Mon"
+                    || names[idx] == "Wed"
+                    || names[idx] == "Fri")
+                {
+                    result.Add(names[idx]);
+                }
+                else
+                {
+                    result.Add("");
+                }
+            }
+
+            return result;
+        }
+
+        private string FormatMinutesToHourMinute(int totalMinutes)
+        {
+            int hours = totalMinutes / 60;
+            int minutes = totalMinutes % 60;
+            if (hours > 0 && minutes > 0)
+                return $"{hours}h{minutes}m";
+            if (hours > 0)
+                return $"{hours}h";
+            if (minutes > 0)
+                return $"{minutes}m";
+            return "0m";
+        }
+    }
+}
