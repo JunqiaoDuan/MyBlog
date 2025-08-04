@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Service.Shared.Interfaces.AI
 {
-    public interface IAIService
+    public interface IAIServiceFactory
     {
-        void Test();
+        IAIService GetService(string providerName);
+        IAIService GetDefaultService();
     }
 }

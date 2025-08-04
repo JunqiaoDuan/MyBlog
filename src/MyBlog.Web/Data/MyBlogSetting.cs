@@ -18,9 +18,15 @@
     public class MyBlogSetting_Azure
     {
         public string Url { get; set; } = "";
+
         public string Name_SqlServerConn { get; set; } = "";
         public string Name_BlogConn { get; set; } = "";
         public string Name_QueueConn { get; set; } = "";
+
+        public string Name_OpenAIEndpoint { get; set; } = "";
+        public string Name_OpenAISecretKey { get; set; } = "";
+
+        public string Name_GeminiSecretKey { get; set; } = "";
     }
 
 }

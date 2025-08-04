@@ -17,6 +17,9 @@ builder.AddRepositories(myBlogSetting);
 builder.AddBusinessService();
 builder.AddAzureServices(myBlogSetting);
 
+// external service
+builder.AddAIService(myBlogSetting);
+
 #endregion
 
 var app = builder.Build();
