@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.Function.ClickStatis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.Function.Dida365", "MyBlog.Function.Dida365\MyBlog.Function.Dida365.csproj", "{0DF27146-22E3-4212-B1AE-5FDD53620BCC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.ExternalService.AI", "MyBlog.ExternalService.AI\MyBlog.ExternalService.AI.csproj", "{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{0DF27146-22E3-4212-B1AE-5FDD53620BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DF27146-22E3-4212-B1AE-5FDD53620BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DF27146-22E3-4212-B1AE-5FDD53620BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

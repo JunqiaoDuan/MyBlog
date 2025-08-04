@@ -9,7 +9,7 @@ namespace MyBlog.Function.ClickStatistics
     public class QueueMonitor
     {
         [FunctionName("QueueMonitor")]
-        [return: Table("ClickBlogStatistics")]
+        //[return: Table("ClickBlogStatistics")]
         public ClickBlogStatistics Run(
             [QueueTrigger("click-menu")] string message,
             ILogger log)

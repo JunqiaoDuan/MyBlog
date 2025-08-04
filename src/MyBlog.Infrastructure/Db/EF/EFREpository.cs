@@ -16,22 +16,5 @@ namespace MyBlog.Infrastructure.Db.EF
         {
 
         }
-
-        #region Obsoleted
-
-        [Obsolete]
-        public override Task<T?> GetBySpecAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
-        {
-            throw new Exception("Obsoleted");
-        }
-
-        [Obsolete]
-        public override Task<TResult?> GetBySpecAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken = default) where TResult : default
-        {
-            throw new Exception("Obsoleted");
-        }
-
-        #endregion
-
     }
 }
