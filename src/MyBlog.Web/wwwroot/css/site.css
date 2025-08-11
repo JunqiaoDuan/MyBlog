@@ -64,3 +64,50 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+/*************************** My Custom Style ***************************/
+
+
+/*************************** lantern-badge ***************************/
+
+.lantern-badge {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 1em;
+    padding: 0.2em 0.6em;
+    font-size: 0.75em;
+    font-weight: bold;
+    transform: translate(50%, -50%);
+    height: 1.6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+    .lantern-badge::before,
+    .lantern-badge::after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 50%;
+        width: 0.18em;
+        height: 0.7em;
+        border-radius: 0.1em;
+        transform: translateX(-50%);
+        z-index: -1;
+    }
+
+    .lantern-badge::before {
+        top: -0.7em;
+        background: linear-gradient(to top, #e74c3c 60%, #fff 100%);
+    }
+
+    .lantern-badge::after {
+        bottom: -0.7em;
+        background: linear-gradient(to bottom, #e74c3c 60%, #fff 100%);
+    }
