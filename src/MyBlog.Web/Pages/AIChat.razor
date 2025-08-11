@@ -1,18 +1,26 @@
 ﻿@page "/chat"
 
-@using MudBlazor
 @inject IDialogService DialogService
 
-<MudChat ChatPosition="ChatBubblePosition.Start">
-    <MudChatBubble>
-        It's over Anakin
-    </MudChatBubble>
-    <MudChatBubble>
-        I have the high ground.
-    </MudChatBubble>
-</MudChat>
-<MudChat ChatPosition="ChatBubblePosition.End">
-    <MudChatBubble>
-        You underestimate my power!
-    </MudChatBubble>
-</MudChat>
+<div class="chat-container">
+    <div class="chat-content">
+        <MudChat ChatPosition="ChatBubblePosition.Start">
+            <MudChatBubble>
+                It's over Anakin
+            </MudChatBubble>
+            <MudChatBubble>
+                I have the high ground.
+            </MudChatBubble>
+        </MudChat>
+        <MudChat ChatPosition="ChatBubblePosition.End">
+            <MudChatBubble>
+                You underestimate my power!
+            </MudChatBubble>
+        </MudChat>
+    </div>
+
+    <div class="chat-textarea-container">
+        <MudTextField @ref="multilineReference" class="chat-textarea" T="string" Label="Outlined" Variant="Variant.Outlined" Text="@_enteredMessage" Lines="3" />
+    </div>
+
+</div>
