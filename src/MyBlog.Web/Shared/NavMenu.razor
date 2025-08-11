@@ -25,10 +25,7 @@
         <div class="nav-item px-3 position-relative">
             <NavLink class="nav-link" href="chat" @onclick='() => OnMenuClick("chat")'>
                 <span class="oi oi-audio" aria-hidden="true"></span> AI Agent
-                @if (!hideBadge)
-                {
-                    <span class="lantern-badge">1+</span>
-                }
+                <span class="lantern-badge @(hideChatBadge ? "hidden" : "")">1+</span>
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -47,7 +44,7 @@
 @code {
 
     private ProfileQueryView? blogOwner;
-    private bool hideBadge = false;
+    private bool hideChatBadge = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +56,7 @@
     {
         if (menuCode == "chat")
         {
-            hideBadge = true;
+            hideChatBadge = true;
             StateHasChanged();
         }
 

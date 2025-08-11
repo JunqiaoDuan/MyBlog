@@ -87,27 +87,34 @@ a, .btn-link {
     align-items: center;
     justify-content: center;
     z-index: 1;
+    opacity: 1;
+    transition: opacity 4s ease;
 }
 
-    .lantern-badge::before,
-    .lantern-badge::after {
-        content: "";
-        display: block;
-        position: absolute;
-        left: 50%;
-        width: 0.18em;
-        height: 0.7em;
-        border-radius: 0.1em;
-        transform: translateX(-50%);
-        z-index: -1;
-    }
+.lantern-badge.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
 
-    .lantern-badge::before {
-        top: -0.7em;
-        background: linear-gradient(to top, #e74c3c 60%, #fff 100%);
-    }
+.lantern-badge::before,
+.lantern-badge::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    width: 0.18em;
+    height: 0.7em;
+    border-radius: 0.1em;
+    transform: translateX(-50%);
+    z-index: -1;
+}
 
-    .lantern-badge::after {
-        bottom: -0.7em;
-        background: linear-gradient(to bottom, #e74c3c 60%, #fff 100%);
-    }
+.lantern-badge::before {
+    top: -0.7em;
+    background: linear-gradient(to top, #e74c3c 60%, #fff 100%);
+}
+
+.lantern-badge::after {
+    bottom: -0.7em;
+    background: linear-gradient(to bottom, #e74c3c 60%, #fff 100%);
+}
