@@ -1,4 +1,5 @@
 ﻿@using Azure.Storage.Queues
+@using MudBlazor
 @using MyBlog.Service.Shared.Dtos.Queries
 @using MyBlog.Service.Shared.Interfaces.Profiles
 
@@ -19,6 +20,8 @@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick='() => OnMenuClick("about")'>
                 <span class="oi oi-home" aria-hidden="true"></span> About
+            </NavLink>
+        </div>
             </NavLink>
         </div>
         <div class="nav-item px-3">

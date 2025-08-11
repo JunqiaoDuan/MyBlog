@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MudBlazor.Services;
 using MyBlog.Web.Configurations;
 using MyBlog.Web.Data;
 
@@ -19,6 +20,9 @@ builder.AddAzureServices(myBlogSetting);
 
 // external service
 builder.AddAIService(myBlogSetting);
+
+// UI
+builder.Services.AddMudServices();
 
 #endregion
 
