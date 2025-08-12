@@ -3,24 +3,120 @@
 @inject IDialogService DialogService
 
 <div class="chat-container">
-    <div class="chat-content">
-        <MudChat ChatPosition="ChatBubblePosition.Start">
-            <MudChatBubble>
+
+    <div class="chat-content-container">
+        <MudChat Color="Color.Transparent" ChatPosition="ChatBubblePosition.Start">
+            <MudAvatar>
+                <MudImage Src="/icons/walle.png" />
+            </MudAvatar>
+            <MudChatBubble Class="chat-bubble">
                 It's over Anakin
             </MudChatBubble>
-            <MudChatBubble>
+            <MudChatBubble Class="chat-bubble">
                 I have the high ground.
             </MudChatBubble>
         </MudChat>
-        <MudChat ChatPosition="ChatBubblePosition.End">
-            <MudChatBubble>
+        <MudChat Color="Color.Transparent" ChatPosition="ChatBubblePosition.End">
+            <MudChatBubble Class="chat-bubble">
                 You underestimate my power!
             </MudChatBubble>
         </MudChat>
     </div>
 
-    <div class="chat-textarea-container">
-        <MudTextField @ref="multilineReference" class="chat-textarea" T="string" Label="Outlined" Variant="Variant.Outlined" Text="@_enteredMessage" Lines="3" />
+    <div class="chat-form-container">
+
+        <InputTextArea class="chat-textarea" @bind-Value="@_enteredMessage" rows="4">
+
+        </InputTextArea>
+
+        <div class="btn-group-inner-container">
+
+            <div class="btn-group-inner btn-group-inner-left">
+            </div>
+
+            <div class="btn-group-inner btn-group-inner-right">
+
+                <MudSelect @bind-Value="_selectedModel" HelperText="String" FitContent="true">
+                    @foreach (var _model in _models)
+                    {
+                        <MudSelectItem Value="@_model.Key">@_model.Value</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudIcon Class="btn-send" Icon="@Icons.Material.Outlined.Send"></MudIcon>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
+
+<style>
+
+    /******************** layout ********************/
+
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        margin-left: 20vw;
+        margin-right: 20vw;
+    }
+
+    /******************** chat content ********************/
+
+    .chat-content-container {
+        min-height: 46vh;
+        margin-bottom:20px;
+    }
+
+    .mud-chat-bubble {
+        background-color: rgba(60, 60, 60, 1);
+        font-size: 1rem;
+    }
+
+    /******************** chat text area ********************/
+    .chat-textarea-container {
+    }
+
+    .chat-textarea {
+        width: 100%;
+        color: white;
+        font-size: 1rem;
+        background-color: transparent;
+        border: 1px solid rgb(61, 68, 77);
+        padding: 10px 20px;
+    }
+
+        .chat-textarea:hover {
+            border: 1px solid rgb(61, 68, 77)
+        }
+
+        .chat-textarea:focus {
+            border: 2px solid rgb(49, 109, 202)
+        }
+
+    .btn-group-inner-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-group-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mud-select-input {
+        color: white;
+        font-size: 1rem;
+    }
+
+    .btn-send {
+        margin-bottom: 10px;
+        margin-left: 6px;
+    }
+
+</style>
