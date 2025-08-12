@@ -1,6 +1,8 @@
 ﻿@page "/chat"
+@using MyBlog.Service.Shared.Interfaces.AI
 
-@inject IDialogService DialogService
+@inject IAIModelService _aiModelService
+@inject IAIServiceFactory _aiServiceFactory
 
 <div class="chat-container">
 
@@ -37,9 +39,9 @@
             <div class="btn-group-inner btn-group-inner-right">
 
                 <MudSelect @bind-Value="_selectedModel" HelperText="String" FitContent="true">
-                    @foreach (var _model in _models)
+                    @foreach (var _model in _aiModels)
                     {
-                        <MudSelectItem Value="@_model.Key">@_model.Value</MudSelectItem>
+                        <MudSelectItem Value="@_model.Code">@_model.DisplayName</MudSelectItem>
                     }
                 </MudSelect>
 

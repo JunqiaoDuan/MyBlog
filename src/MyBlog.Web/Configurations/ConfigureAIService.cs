@@ -24,6 +24,12 @@ namespace MyBlog.Web.Configurations
         {
             var secretClient = new SecretClient(new Uri(myBlogSetting.Azure_KeyVault.Url), new DefaultAzureCredential());
 
+            #region Model service
+
+            builder.Services.AddSingleton<IAIModelService, AIModelService>();
+
+            #endregion
+
             #region Open AI
 
             var openAIendpoint = secretClient.GetSecretAsync(myBlogSetting.Azure_KeyVault.Name_OpenAIEndpoint).Result.Value.Value;

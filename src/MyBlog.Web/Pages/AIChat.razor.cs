@@ -1,21 +1,50 @@
 ﻿using MudBlazor;
+using MyBlog.Service.Shared.Interfaces.AI.Model;
 
 namespace MyBlog.Web.Pages
 {
     public partial class AIChat
     {
-        private string _enteredMessage { get; set; } = "";
-        private string _selectedModel { get; set; } = "model1";
-        private List<KeyValuePair<string, string>> _models = [
-            new KeyValuePair<string, string>("model1", "model1"),
-            new KeyValuePair<string, string>("model2", "model2"),
-            new KeyValuePair<string, string>("model3sdfdsfsdf", "model3sdfdsfsdf"),
-        ];
+        #region Property
 
-        private void SendMessage()
+        private string _enteredMessage { get; set; } = "";
+        private string _selectedModel { get; set; } = "";
+        private List<AIModel> _aiModels = [];
+
+        #endregion
+
+        #region Event
+
+        protected override async Task OnInitializedAsync()
         {
-            // Add logic to send message and update chat history
-            _enteredMessage = "";
+
+            // data init
+            await retrieveEnabledModels();
+            await retrieveDefaultModel();
+
+            await base.OnInitializedAsync();
         }
+
+        #endregion
+
+        #region Private method
+
+        private async Task retrieveEnabledModels()
+        {
+            var models = await _aiModelService.GetAllEnableModelsAsync();
+            _aiModels = models;
+        }
+
+        private async Task retrieveDefaultModel()
+        {
+            var model = await _aiModelService.GetDefaultModel("");
+            if (model != null)
+            {
+                _selectedModel = model.Code;
+            }
+        }
+
+        #endregion
+
     }
 }
