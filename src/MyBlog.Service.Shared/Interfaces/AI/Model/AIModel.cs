@@ -8,14 +8,16 @@ namespace MyBlog.Service.Shared.Interfaces.AI.Model
 {
     public class AIModel
     {
-        public AIModel(string code, string dispalyName, bool needAuth, bool enable)
+        public AIModel(string aiProvider, string code, string dispalyName, bool needAuth, bool enable)
         {
+            Provider = aiProvider;
             Code = code;
             DisplayName = dispalyName;
             NeedAuth = needAuth;
             Enable = enable;
         }
 
+        public string Provider { get; set; }
         public string Code { get; set; }
         public string DisplayName { get; set; }
         public bool NeedAuth { get; set; }

@@ -1,5 +1,7 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components.Web;
+using MudBlazor;
 using MyBlog.Service.Shared.Interfaces.AI.Model;
+using OpenAI.Chat;
 
 namespace MyBlog.Web.Pages
 {
@@ -8,8 +10,10 @@ namespace MyBlog.Web.Pages
         #region Property
 
         private string _enteredMessage { get; set; } = "";
-        private string _selectedModel { get; set; } = "";
+        private AIModel? _selectedModel { get; set; }
         private List<AIModel> _aiModels = [];
+
+        private List<AIChatMessage> _aiChatMessages = [];
 
         #endregion
 
@@ -23,6 +27,50 @@ namespace MyBlog.Web.Pages
             await retrieveDefaultModel();
 
             await base.OnInitializedAsync();
+        }
+
+        private async Task OnKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                await OnSendMessageClicked();
+            }
+        }
+
+        private async Task OnSendMessageClicked()
+        {
+            if (string.IsNullOrWhiteSpace(_enteredMessage))
+            {
+                return;
+            }
+
+            _aiChatMessages.Add(AIChatMessage.CreateUserMessage(_enteredMessage));
+
+            try
+            {
+                if (_selectedModel == null)
+                {
+                    throw new Exception("Please select Model");
+                }
+
+                var _aiService = _aiServiceFactory.GetService(_selectedModel.Provider);
+                if (_aiService == null)
+                {
+                    _aiChatMessages.Add(AIChatMessage.CreateAssistantMessage("AI service not found."));
+                    return;
+                }
+
+                _enteredMessage = "";
+
+                await _aiService.ChatAsync(_aiChatMessages, _selectedModel.Code);
+                StateHasChanged();
+
+            }
+            catch (Exception ex)
+            {
+                _aiChatMessages.Add(AIChatMessage.CreateAssistantMessage($"Error: {ex.Message}"));
+                return;
+            }
         }
 
         #endregion
@@ -40,7 +88,7 @@ namespace MyBlog.Web.Pages
             var model = await _aiModelService.GetDefaultModel("");
             if (model != null)
             {
-                _selectedModel = model.Code;
+                _selectedModel = model;
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿@page "/chat"
 @using MyBlog.Service.Shared.Interfaces.AI
+@using MyBlog.Service.Shared.Interfaces.AI.Enum
+@using OpenAI.Chat
 
 @inject IAIModelService _aiModelService
 @inject IAIServiceFactory _aiServiceFactory
@@ -7,27 +9,44 @@
 <div class="chat-container">
 
     <div class="chat-content-container">
-        <MudChat Color="Color.Transparent" ChatPosition="ChatBubblePosition.Start">
-            <MudAvatar>
-                <MudImage Src="/icons/walle.png" />
-            </MudAvatar>
-            <MudChatBubble Class="chat-bubble">
-                It's over Anakin
-            </MudChatBubble>
-            <MudChatBubble Class="chat-bubble">
-                I have the high ground.
-            </MudChatBubble>
-        </MudChat>
-        <MudChat Color="Color.Transparent" ChatPosition="ChatBubblePosition.End">
-            <MudChatBubble Class="chat-bubble">
-                You underestimate my power!
-            </MudChatBubble>
-        </MudChat>
+
+        @foreach (var _chatMessage in _aiChatMessages)
+        {
+            @if (_chatMessage.Role == AIChatMessageRole.User)
+            {
+                <MudChat Color="Color.Transparent" ChatPosition="ChatBubblePosition.End">
+
+                    <MudChatBubble Class="chat-bubble">
+                        @_chatMessage.Content
+                    </MudChatBubble>
+
+                </MudChat>
+            }
+            else if (_chatMessage.Role == AIChatMessageRole.Assistant)
+            {
+                <MudChat Color="Color.Transparent" ChatPosition="ChatBubblePosition.Start">
+
+                    <MudAvatar Style="align-self: start;">
+                        <MudImage Src="/icons/walle.png" />
+                    </MudAvatar>
+
+                    <MudChatBubble Class="chat-bubble">
+                        @_chatMessage.Content
+                    </MudChatBubble>
+
+                </MudChat>
+            }
+            else if (_chatMessage.Role == AIChatMessageRole.System)
+            {
+
+            }
+        }
+
     </div>
 
     <div class="chat-form-container">
 
-        <InputTextArea class="chat-textarea" @bind-Value="@_enteredMessage" rows="4">
+        <InputTextArea class="chat-textarea" @bind-Value="@_enteredMessage" rows="4" @onkeydown="OnKeyDown">
 
         </InputTextArea>
 
@@ -38,14 +57,14 @@
 
             <div class="btn-group-inner btn-group-inner-right">
 
-                <MudSelect @bind-Value="_selectedModel" HelperText="String" FitContent="true">
+                <MudSelect @bind-Value="_selectedModel.Code" HelperText="String" FitContent="true">
                     @foreach (var _model in _aiModels)
                     {
                         <MudSelectItem Value="@_model.Code">@_model.DisplayName</MudSelectItem>
                     }
                 </MudSelect>
 
-                <MudIcon Class="btn-send" Icon="@Icons.Material.Outlined.Send"></MudIcon>
+                <MudIcon Class="btn-send" Icon="@Icons.Material.Outlined.Send" @onclick="OnSendMessageClicked"></MudIcon>
 
             </div>
 
@@ -124,6 +143,10 @@
     .btn-send {
         margin-bottom: 16px;
         margin-left: 12px;
+    }
+
+    .btn-send:hover {
+        cursor: pointer;
     }
 
 </style>

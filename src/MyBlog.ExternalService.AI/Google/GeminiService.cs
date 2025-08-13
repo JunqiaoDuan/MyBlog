@@ -1,4 +1,5 @@
 ﻿using MyBlog.Service.Shared.Interfaces.AI;
+using MyBlog.Service.Shared.Interfaces.AI.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,11 @@ namespace MyBlog.ExternalService.AI.Google
         {
             Console.WriteLine("Testing Gemini AI Service");
         }
+
+        public Task ChatAsync(List<AIChatMessage> messages, string modelCode)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

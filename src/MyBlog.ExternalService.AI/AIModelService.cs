@@ -24,12 +24,12 @@ namespace MyBlog.ExternalService.AI
             var models = new List<AIModel>()
             {
                 // cheap model
-                new AIModel("gpt-5-nano", "GPT-5-nano", false, true),
-                new AIModel("gpt-4.1-nano", "GPT-4.1-nano", false, true),
+                new AIModel(AIConst.OpenAI, "gpt-5-nano", "GPT-5-nano", false, true),
+                new AIModel(AIConst.OpenAI, "gpt-4.1-nano", "GPT-4.1-nano", false, true),
 
                 // expansive model
-                new AIModel("gpt-5", "GPT-5", true, true),
-                new AIModel("gpt-4.1", "GPT-4.1", true, true),
+                new AIModel(AIConst.OpenAI, "gpt-5", "GPT-5", true, true),
+                new AIModel(AIConst.OpenAI, "gpt-4.1", "GPT-4.1", true, true),
             };
 
             return Task.FromResult(models);
