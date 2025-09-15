@@ -10,6 +10,18 @@
 
     <div class="chat-content-container">
 
+        @if (_aiChatMessages == null || !_aiChatMessages.Any())
+        {
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 30vh;">
+                <MudAvatar Size="Size.Large" Style="margin-bottom: 16px;">
+                    <MudImage Src="/icons/walle.png" />
+                </MudAvatar>
+                <div style="color: #ccc; font-size: 1.2rem; text-align: center;">
+                    Welcome! Let's chat!
+                </div>
+            </div>
+        }
+
         @foreach (var _chatMessage in _aiChatMessages)
         {
             @if (_chatMessage.Role == AIChatMessageRole.User)
@@ -42,6 +54,7 @@
             }
         }
 
+    
     </div>
 
     <div class="chat-form-container">
