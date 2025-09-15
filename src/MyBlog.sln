@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.Function.Dida365", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.ExternalService.AI", "MyBlog.ExternalService.AI\MyBlog.ExternalService.AI.csproj", "{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.External.PDFGenerator", "MyBlog.External.PDFGenerator\MyBlog.External.PDFGenerator.csproj", "{FEFC027F-F3B7-4281-B357-874D42D903D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D27EA8CA-18A9-4B4D-94F6-0B690CE8944E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEFC027F-F3B7-4281-B357-874D42D903D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEFC027F-F3B7-4281-B357-874D42D903D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEFC027F-F3B7-4281-B357-874D42D903D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEFC027F-F3B7-4281-B357-874D42D903D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
