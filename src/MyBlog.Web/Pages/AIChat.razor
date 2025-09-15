@@ -42,7 +42,7 @@
                         <MudImage Src="/icons/walle.png" />
                     </MudAvatar>
 
-                    <MudChatBubble Class="chat-bubble">
+                    <MudChatBubble Class="chat-bubble assistant-message">
                         @_chatMessage.Content
                     </MudChatBubble>
 
@@ -112,6 +112,10 @@
 
     /******************** chat text area ********************/
     .chat-textarea-container {
+    }
+
+    .assistant-message {
+        white-space: pre-line;
     }
 
     .chat-textarea {
