@@ -15,6 +15,9 @@ namespace MyBlog.Web.Pages
 
         private List<AIChatMessage> _aiChatMessages = [];
 
+        private static readonly Queue<DateTime> _sendTimestamps = new();
+        private static readonly object _sendLock = new();
+
         #endregion
 
         #region Event
@@ -39,10 +42,19 @@ namespace MyBlog.Web.Pages
 
         private async Task OnSendMessageClicked()
         {
+            if (!CanSendMessage())
+            {
+                _aiChatMessages.Add(AIChatMessage.CreateAssistantMessage("You can only send 2 messages per minute. Please wait."));
+                StateHasChanged();
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(_enteredMessage))
             {
                 return;
             }
+
+            _sendTimestamps.Enqueue(DateTime.UtcNow);
 
             _aiChatMessages.Add(AIChatMessage.CreateUserMessage(_enteredMessage));
 
@@ -76,6 +88,19 @@ namespace MyBlog.Web.Pages
         #endregion
 
         #region Private method
+
+        private bool CanSendMessage()
+        {
+            var now = DateTime.UtcNow;
+            lock (_sendLock)
+            {
+                while (_sendTimestamps.Count > 0 && (now - _sendTimestamps.Peek()).TotalSeconds > 60)
+                {
+                    _sendTimestamps.Dequeue();
+                }
+                return _sendTimestamps.Count < 2;
+            }
+        }
 
         private async Task retrieveEnabledModels()
         {
