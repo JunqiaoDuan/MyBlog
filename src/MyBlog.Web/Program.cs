@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.Services;
 using MyBlog.Web.Configurations;
 using MyBlog.Web.Data;
+using MyBlog.External.PDFGenerator.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.AddMyBlogSetting(out MyBlogSetting myBlogSetting);
 builder.AddRepositories(myBlogSetting);
 builder.AddBusinessService();
 builder.AddAzureServices(myBlogSetting);
+
+builder.Services.AddPdfGenerator();
 
 // external service
 builder.AddAIService(myBlogSetting);

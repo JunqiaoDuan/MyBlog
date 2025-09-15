@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MyBlog.External.PDFGenerator\MyBlog.External.PDFGenerator.csproj" />
     <ProjectReference Include="..\MyBlog.ExternalService.AI\MyBlog.ExternalService.AI.csproj" />
     <ProjectReference Include="..\MyBlog.Infrastructure\MyBlog.Infrastructure.csproj" />
   </ItemGroup>
