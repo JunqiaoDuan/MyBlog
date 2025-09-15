@@ -4,15 +4,10 @@ namespace MyBlog.Web.Shared
 {
     public partial class NavMenu
     {
-        private ProfileQueryView? blogOwner;
         private bool hideChatBadge = false;
 
         protected override async Task OnInitializedAsync()
         {
-            blogOwner = new ProfileQueryView()
-            {
-                Name = "Drin Duan",
-            };
         }
 
         private async void OnMenuClick(string menuCode)
