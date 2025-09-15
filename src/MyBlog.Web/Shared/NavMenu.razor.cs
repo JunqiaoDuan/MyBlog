@@ -9,8 +9,10 @@ namespace MyBlog.Web.Shared
 
         protected override async Task OnInitializedAsync()
         {
-            var profiles = await _profileService.GetProfilesAsync();
-            blogOwner = profiles.FirstOrDefault(p => p.Name == "Name");
+            blogOwner = new ProfileQueryView()
+            {
+                Name = "Drin Duan",
+            };
         }
 
         private async void OnMenuClick(string menuCode)

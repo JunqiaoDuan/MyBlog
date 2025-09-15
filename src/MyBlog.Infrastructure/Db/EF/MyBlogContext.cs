@@ -36,7 +36,7 @@ namespace MyBlog.Infrastructure.Db.EF
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            initialiazeSeeds(builder);
+            // initialiazeSeeds(builder);
         }
 
         private void initialiazeSeeds(ModelBuilder builder)
